@@ -1,0 +1,10 @@
+.title-container{
+  display: block;
+  text-align: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: auto;
+  margin-top: 10%;
+  margin-bottom: 50px;
+  width: 100%;
+}
