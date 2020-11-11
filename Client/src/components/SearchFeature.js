@@ -25,17 +25,17 @@ export default class SearchFeature extends React.Component {
       provider: "",
       ownership: "",
       avgResidents: 0,
-      abuseIcon: null,
-      rating: null,
+      abuseIcon: "",
+      rating: "",
       covidAdmission: 0,
       confirmedCases: 0,
       distance: 0,
       freeBeds: 0,
-      latitude: null,
-      longitude: null,
-      errorMessage: null,
-      submittedData: null,
-      passedQA: null
+      latitude: 0,
+      longitude: 0,
+      errorMessage: "",
+      submittedData: "",
+      passedQA: "",
     }
   }
 
@@ -65,6 +65,14 @@ export default class SearchFeature extends React.Component {
     console.log(this.state.provider)
     console.log(this.state.distance)
     console.log(this.state.ownership)
+    console.log(this.state.abuseIcon)
+    console.log(this.state.submittedData)
+    console.log(this.state.passedQA)
+    console.log(this.state.rating)
+    console.log(this.state.avgResidents)
+    console.log(this.state.covidAdmission)
+    console.log(this.state.confirmedCases)
+    console.log(this.state.freeBeds)
   }
 
   onNameChange = (event) => {
@@ -103,6 +111,53 @@ export default class SearchFeature extends React.Component {
     })
   }
 
+  onAbuseChange = (event) => {
+    this.setState({
+      abuseIcon: event.target.value
+    })
+  }
+
+  onSubmittedChange = (event) => {
+    this.setState({
+      submittedData: event.target.value
+    })
+  }
+
+  onQAChange = (event) => {
+    this.setState({
+      passedQA: event.target.value
+    })
+  }
+
+  onRatingChange = (event) => {
+    this.setState({
+      rating: event.target.value
+    })
+  }
+
+  resetFilter = () => {
+    this.setState({
+      id: "",
+      name: "",
+      state: "",
+      provider: "",
+      ownership: "",
+      avgResidents: 0,
+      abuseIcon: "",
+      rating: "",
+      covidAdmission: 0,
+      confirmedCases: 0,
+      distance: 0,
+      freeBeds: 0,
+      latitude: 0,
+      longitude: 0,
+      errorMessage: "",
+      submittedData: "",
+      passedQA: ""
+    })
+  }
+
+
 
   render() {
     return (
@@ -129,7 +184,7 @@ export default class SearchFeature extends React.Component {
                     </Label>
                     <div style={{width:"200px"}}>
                       <Label className="bp3-label" htmlFor="stateDropdown">State:
-                        <HTMLSelect id="stateDropdown" fill={false} onChange={this.onStateChange}>
+                        <HTMLSelect id="stateDropdown" fill={false} onChange={this.onStateChange} value={this.state.state}>
                           <option value="">-</option>
                           <option>AL</option>
                           <option>AK</option>
@@ -140,8 +195,8 @@ export default class SearchFeature extends React.Component {
                       </Label>
                     </div>
                     <Label className="bp3-label" htmlFor="providerDropdown">Provider Type:
-                      <HTMLSelect id = "providerDropdown" onChange={this.onProviderChange}>
-                        <option>-</option>
+                      <HTMLSelect id = "providerDropdown" onChange={this.onProviderChange} value={this.state.provider}>
+                        <option value="">-</option>
                         <option>Medicaid</option>
                         <option>Medicare</option>
                         <option>Medicare and Medicaid</option>
@@ -149,7 +204,7 @@ export default class SearchFeature extends React.Component {
                     </Label>
                     <Label className="bp3-label" htmlFor="radius">Within distance from me (km):
                       <NumericInput id="radius"
-                        max={100}
+                        max={500}
                         min={0}
                         value={this.state.distance}
                         onValueChange={this.onDistanceChange}
@@ -162,8 +217,8 @@ export default class SearchFeature extends React.Component {
                   <FormGroup>
                     <div style={{width:"200px"}}>
                       <Label className="bp3-label" htmlFor="ownershipDropdown">Ownership Type:
-                        <HTMLSelect id = "ownershipDropdown" onChange={this.onOwnershipChange}>
-                          <option>-</option>
+                        <HTMLSelect id = "ownershipDropdown" onChange={this.onOwnershipChange} value={this.state.ownership}>
+                          <option value="">-</option>
                           <option value="For profit - Corporation">For profit - Corporation</option>
                           <option value="For profit - Individual">For profit - Individual</option>
                           <option value="For profit - Limited Liability company">For profit - Limited Liability company</option>
@@ -182,22 +237,22 @@ export default class SearchFeature extends React.Component {
                     </div>
                     <div style={{width:"200px"}}>
                       <Label className="bp3-label" htmlFor="abuseDropdown">Abuse Icon:
-                        <HTMLSelect id = "abuseDropdown">
-                          <option>-</option>
+                        <HTMLSelect id = "abuseDropdown" onChange={this.onAbuseChange} value={this.state.abuseIcon}>
+                          <option value="">-</option>
                           <option value="True">Yes</option>
                           <option value="False">No</option>
                         </HTMLSelect>
                       </Label>
                       <Label className="bp3-label" htmlFor="submittedCovidDropdown">Submitted Covid Data:
-                        <HTMLSelect id = "submittedCovidDropdown">
-                          <option>-</option>
-                          <option>Yes</option>
-                          <option>No</option>
+                        <HTMLSelect id = "submittedCovidDropdown" onChange={this.onSubmittedChange} value={this.state.submittedData}>
+                          <option value="">-</option>
+                          <option value="True">Yes</option>
+                          <option value="True">No</option>
                         </HTMLSelect>
                       </Label>
                       <Label className="bp3-label" htmlFor="qaDropdown">Passed QA Check:
-                        <HTMLSelect id = "qaDropdown">
-                          <option>-</option>
+                        <HTMLSelect id = "qaDropdown" onChange={this.onQAChange} value={this.state.passedQA}>
+                          <option value="">-</option>
                           <option>Yes</option>
                           <option>No</option>
                         </HTMLSelect>
@@ -205,12 +260,14 @@ export default class SearchFeature extends React.Component {
                     </div>
                     <div style={{width:"200px"}}>
                       <Label className="bp3-label" htmlFor="ratingDropdown">Overall Rating:
-                        <HTMLSelect id = "ratingDropdown">
-                          <option>-</option>
-                          <option>For profit - Corporation</option>
-                          <option>For profit - Individual</option>
-                          <option>For profit - Limited Liability company</option>
-                          <option>For profit - Partnership</option>
+                        <HTMLSelect id = "ratingDropdown" onChange={this.onRatingChange} value={this.state.rating}>
+                          <option value="">-</option>
+                          <option>0</option>
+                          <option>1</option>
+                          <option>2</option>
+                          <option>3</option>
+                          <option>4</option>
+                          <option>5</option>
                         </HTMLSelect>
                       </Label>
                     </div>
@@ -222,7 +279,7 @@ export default class SearchFeature extends React.Component {
                       Average Number Of Residents
                       <Slider
                         min={0}
-                        max={400}
+                        max={800}
                         stepSize={1}
                         labelStepSize={100}
                         style={{width:"150px"}}
@@ -234,9 +291,9 @@ export default class SearchFeature extends React.Component {
                       Total Covid Admissions
                       <Slider
                         min={0}
-                        max={100}
+                        max={400}
                         stepSize={1}
-                        labelStepSize={25}
+                        labelStepSize={100}
                         style={{width:"150px"}}
                         value={this.state.covidAdmission}
                         onChange={this.getChangeHandler("covidAdmission")}
@@ -246,9 +303,9 @@ export default class SearchFeature extends React.Component {
                       Total Confirmed Covid Cases
                       <Slider
                         min={0}
-                        max={400}
+                        max={45000}
                         stepSize={1}
-                        labelStepSize={100}
+                        labelStepSize={10000}
                         style={{width:"150px"}}
                         value={this.state.confirmedCases}
                         onChange={this.getChangeHandler("confirmedCases")}
@@ -270,7 +327,7 @@ export default class SearchFeature extends React.Component {
                 </Card>
               </div>
               <div className='buttons-container'>
-                <Button id='button' icon="refresh" intent="danger" text="Reset Filters" />
+                <Button id='button' icon="refresh" intent="danger" text="Reset Filters" onClick={this.resetFilter}/>
                 <Button id='button' icon="arrow-right" intent="success" text="Search" onClick={this.onFormSubmit}/>
               </div>
             </form>

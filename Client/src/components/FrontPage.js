@@ -32,8 +32,8 @@ export default class FrontPage extends React.Component {
         <PageNavbar active="dashboard" />
         <br></br>
         <div className="title-container">
-          <h1>Welcome to Find Your Nursing Home!</h1>
-          <h5>We'll help you find a place you'll love.</h5>
+          <h1>Welcome to Nurse Next Door!</h1>
+          <h5>We'll help you find a nursing home that you'll love.</h5>
         </div>
         <div className="search-container">
           <form className='form' onSubmit={this.onFormSubmit}>
