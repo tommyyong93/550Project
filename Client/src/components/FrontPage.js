@@ -2,8 +2,7 @@ import React from 'react';
 import '../style/FrontPage.css';
 import PageNavbar from './PageNavbar';
 import {
-  InputGroup,
-  Form
+  InputGroup
 } from "@blueprintjs/core";
 
 

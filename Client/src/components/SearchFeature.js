@@ -19,13 +19,12 @@ export default class SearchFeature extends React.Component {
     super(props)
 
     this.state = {
+      id: "",
       name: "",
-      id: null,
       state: "",
-      zip: null,
       provider: "",
       ownership: "",
-      avgResidents: null,
+      avgResidents: 0,
       abuseIcon: null,
       rating: null,
       covidAdmission: 0,
@@ -34,6 +33,8 @@ export default class SearchFeature extends React.Component {
       latitude: null,
       longitude: null,
       errorMessage: null,
+      submittedData: null,
+      passedQA: null
     }
   }
 
@@ -55,6 +56,30 @@ export default class SearchFeature extends React.Component {
     });
   }
 
+  onFormSubmit = (event) => {
+    event.preventDefault();
+    console.log(this.state.name)
+    console.log(this.state.id)
+    console.log(this.state.state)
+  }
+
+  onNameChange = (event) => {
+    this.setState({
+      name: event.target.value
+    })
+  }
+
+  onIDChange = (event) => {
+    this.setState({
+      id: event.target.value
+    })
+  }
+
+  onStateChange = (event) => {
+    this.setState({
+      state: event.target.value
+    })
+  }
 
   render() {
     return (
@@ -69,39 +94,28 @@ export default class SearchFeature extends React.Component {
             <div className="h5 title">Find a nursing home that fits your needs</div>
             <p>You are at latitude {this.state.latitude} and longitude {this.state.longitude}</p>
             <p>{this.state.covidAdmission}</p>
-            <div className='form-container'>
-              <Card style={{width:"250px",margin:"20px"}}>
-                <FormGroup>
-                  <Label className="bp3-label" htmlFor="nameInput">Name:
-                    <InputGroup style={{width:"200px"}}></InputGroup>
-                  </Label>
-                  <Label className="bp3-label" htmlFor="idInput">ID:
-                    <InputGroup style={{width:"200px"}}></InputGroup>
-                  </Label>
-                  <div style={{width:"200px"}}>
-                    <Label className="bp3-label" htmlFor="stateDropdown">State:
-                      <HTMLSelect id="stateDropdown" fill={false}>
-                        <option>-</option>
-                        <option>AL</option>
-                        <option>AK</option>
-                        <option>AZ</option>
-                        <option>AR</option>
-                        <option>CA</option>
-                      </HTMLSelect>
+            <form className='form' onSubmit={this.onFormSubmit}>
+              <div className='form-container'>
+                <Card style={{width:"250px",margin:"20px"}}>
+                  <FormGroup>
+                    <Label className="bp3-label" htmlFor="nameInput">Name:
+                      <InputGroup style={{width:"200px"}} value={this.state.name} onChange={this.onNameChange}></InputGroup>
                     </Label>
-                  </div>
-                  <Label className="bp3-label" htmlFor="radius">Within distance from me (km):
-                    <NumericInput id="radius"
-                      max={100}
-                      min={0}
-                    >
-                    </NumericInput>
-                  </Label>
-                </FormGroup>
-              </Card>
-              <Card style={{width:"250px",margin:"20px"}}>
-                <FormGroup>
-                  <div style={{width:"200px"}}>
+                    <Label className="bp3-label" htmlFor="idInput">ID:
+                      <InputGroup style={{width:"200px"}} value={this.state.id} onChange={this.onIDChange}></InputGroup>
+                    </Label>
+                    <div style={{width:"200px"}}>
+                      <Label className="bp3-label" htmlFor="stateDropdown">State:
+                        <HTMLSelect id="stateDropdown" fill={false} onChange={this.onStateChange}>
+                          <option value="">-</option>
+                          <option>AL</option>
+                          <option>AK</option>
+                          <option>AZ</option>
+                          <option>AR</option>
+                          <option>CA</option>
+                        </HTMLSelect>
+                      </Label>
+                    </div>
                     <Label className="bp3-label" htmlFor="providerDropdown">Provider Type:
                       <HTMLSelect id = "providerDropdown">
                         <option>-</option>
@@ -110,123 +124,131 @@ export default class SearchFeature extends React.Component {
                         <option>Medicare and Medicaid</option>
                       </HTMLSelect>
                     </Label>
-                  </div>
-                  <div style={{width:"200px"}}>
-                    <Label className="bp3-label" htmlFor="ownershipDropdown">Ownership Type:
-                      <HTMLSelect id = "ownershipDropdown">
-                        <option>-</option>
-                        <option>For profit - Corporation</option>
-                        <option>For profit - Individual</option>
-                        <option>For profit - Limited Liability company</option>
-                        <option>For profit - Partnership</option>
-                        <option>Government - City</option>
-                        <option>Government - City/County</option>
-                        <option>Government - County</option>
-                        <option>Government - Hospital district</option>
-                        <option>Government - State</option>
-                        <option>Non profit - Church Related</option>
-                        <option>Non profit - Corporation</option>
-                        <option>Non profit - Other </option>
-                      </HTMLSelect>
+                    <Label className="bp3-label" htmlFor="radius">Within distance from me (km):
+                      <NumericInput id="radius"
+                        max={100}
+                        min={0}
+                      >
+                      </NumericInput>
                     </Label>
-                  </div>
-                  <div style={{width:"200px"}}>
-                    <Label className="bp3-label" htmlFor="ownershipDropdown">Abuse Icon:
-                      <HTMLSelect id = "ownershipDropdown">
-                        <option>-</option>
-                        <option>For profit - Corporation</option>
-                        <option>For profit - Individual</option>
-                        <option>For profit - Limited Liability company</option>
-                        <option>For profit - Partnership</option>
-                        <option>Government - City</option>
-                        <option>Government - City/County</option>
-                        <option>Government - County</option>
-                        <option>Government - Hospital district</option>
-                        <option>Government - State</option>
-                        <option>Non profit - Church Related</option>
-                        <option>Non profit - Corporation</option>
-                        <option>Non profit - Other </option>
-                      </HTMLSelect>
+                  </FormGroup>
+                </Card>
+                <Card style={{width:"250px",margin:"20px"}}>
+                  <FormGroup>
+                    <div style={{width:"200px"}}>
+                      <Label className="bp3-label" htmlFor="ownershipDropdown">Ownership Type:
+                        <HTMLSelect id = "ownershipDropdown">
+                          <option>-</option>
+                          <option value="For profit - Corporation">For profit - Corporation</option>
+                          <option value="For profit - Individual">For profit - Individual</option>
+                          <option value="For profit - Limited Liability company">For profit - Limited Liability company</option>
+                          <option value="For profit - Partnership">For profit - Partnership</option>
+                          <option value="Government - City">Government - City</option>
+                          <option value="Government - City/County">Government - City/County</option>
+                          <option value="Government - County">Government - County</option>
+                          <option value="Government - Federal">Government - Federal</option>
+                          <option value="Government - Hospital district">Government - Hospital district</option>
+                          <option value="Government - State">Government - State</option>
+                          <option value="Non profit - Church Related">Non profit - Church Related</option>
+                          <option value="Non profit - Corporation">Non profit - Corporation</option>
+                          <option value="Non profit - Other">Non profit - Other </option>
+                        </HTMLSelect>
+                      </Label>
+                    </div>
+                    <div style={{width:"200px"}}>
+                      <Label className="bp3-label" htmlFor="abuseDropdown">Abuse Icon:
+                        <HTMLSelect id = "abuseDropdown">
+                          <option>-</option>
+                          <option value="True">Yes</option>
+                          <option value="False">No</option>
+                        </HTMLSelect>
+                      </Label>
+                      <Label className="bp3-label" htmlFor="submittedCovidDropdown">Submitted Covid Data:
+                        <HTMLSelect id = "submittedCovidDropdown">
+                          <option>-</option>
+                          <option>Yes</option>
+                          <option>No</option>
+                        </HTMLSelect>
+                      </Label>
+                      <Label className="bp3-label" htmlFor="qaDropdown">Passed QA Check:
+                        <HTMLSelect id = "qaDropdown">
+                          <option>-</option>
+                          <option>Yes</option>
+                          <option>No</option>
+                        </HTMLSelect>
+                      </Label>
+                    </div>
+                    <div style={{width:"200px"}}>
+                      <Label className="bp3-label" htmlFor="ratingDropdown">Overall Rating:
+                        <HTMLSelect id = "ratingDropdown">
+                          <option>-</option>
+                          <option>For profit - Corporation</option>
+                          <option>For profit - Individual</option>
+                          <option>For profit - Limited Liability company</option>
+                          <option>For profit - Partnership</option>
+                        </HTMLSelect>
+                      </Label>
+                    </div>
+                  </FormGroup>
+                </Card>
+                <Card style={{width:"350px",margin:"20px"}}>
+                  <FormGroup>
+                    <Label>
+                      Average Number Of Residents
+                      <Slider
+                        min={0}
+                        max={400}
+                        stepSize={1}
+                        labelStepSize={100}
+                        style={{width:"150px"}}
+                        value={this.state.avgResidents}
+                        onChange={this.getChangeHandler("avgResidents")}
+                      />
                     </Label>
-                  </div>
-                  <div style={{width:"200px"}}>
-                    <Label className="bp3-label" htmlFor="ownershipDropdown">Overall Rating:
-                      <HTMLSelect id = "ownershipDropdown">
-                        <option>-</option>
-                        <option>For profit - Corporation</option>
-                        <option>For profit - Individual</option>
-                        <option>For profit - Limited Liability company</option>
-                        <option>For profit - Partnership</option>
-                        <option>Government - City</option>
-                        <option>Government - City/County</option>
-                        <option>Government - County</option>
-                        <option>Government - Hospital district</option>
-                        <option>Government - State</option>
-                        <option>Non profit - Church Related</option>
-                        <option>Non profit - Corporation</option>
-                        <option>Non profit - Other </option>
-                      </HTMLSelect>
+                    <Label>
+                      Total Covid Admissions
+                      <Slider
+                        min={0}
+                        max={100}
+                        stepSize={1}
+                        labelStepSize={25}
+                        style={{width:"150px"}}
+                        value={this.state.covidAdmission}
+                        onChange={this.getChangeHandler("covidAdmission")}
+                      />
                     </Label>
-                  </div>
-                </FormGroup>
-              </Card>
-              <Card style={{width:"350px",margin:"20px"}}>
-                <FormGroup>
-                  <Label>
-                    Average Number Of Residents
-                    <Slider
-                      min={0}
-                      max={400}
-                      stepSize={1}
-                      labelStepSize={100}
-                      style={{width:"150px"}}
-                      value={this.state.covidAdmission}
-                      onChange={this.getChangeHandler("covidAdmission")}
-                    />
-                  </Label>
-                  <Label>
-                    Total Covid Admissions
-                    <Slider
-                      min={0}
-                      max={100}
-                      stepSize={1}
-                      labelStepSize={25}
-                      style={{width:"150px"}}
-                      value={this.state.covidAdmission}
-                      onChange={this.getChangeHandler("covidAdmission")}
-                    />
-                  </Label>
-                  <Label>
-                    Total Confirmed Covid Cases
-                    <Slider
-                      min={0}
-                      max={400}
-                      stepSize={1}
-                      labelStepSize={100}
-                      style={{width:"150px"}}
-                      value={this.state.covidAdmission}
-                      onChange={this.getChangeHandler("covidAdmission")}
-                    />
-                  </Label>
-                  <Label>
-                    Number of Free Beds
-                    <Slider
-                      min={0}
-                      max={200}
-                      stepSize={1}
-                      labelStepSize={50}
-                      style={{width:"150px"}}
-                      value={this.state.covidAdmission}
-                      onChange={this.getChangeHandler("covidAdmission")}
-                    />
-                  </Label>
-                </FormGroup>
-              </Card>
-            </div>
-            <div className='buttons-container'>
-              <Button id='button' icon="refresh" intent="danger" text="Reset Filters" />
-              <Button id='button' icon="arrow-right" intent="success" text="Search" />
-            </div>
+                    <Label>
+                      Total Confirmed Covid Cases
+                      <Slider
+                        min={0}
+                        max={400}
+                        stepSize={1}
+                        labelStepSize={100}
+                        style={{width:"150px"}}
+                        value={this.state.confirmedCases}
+                        onChange={this.getChangeHandler("confirmedCases")}
+                      />
+                    </Label>
+                    <Label>
+                      Number of Free Beds
+                      <Slider
+                        min={0}
+                        max={400}
+                        stepSize={1}
+                        labelStepSize={50}
+                        style={{width:"150px"}}
+                        value={this.state.freeBeds}
+                        onChange={this.getChangeHandler("freeBeds")}
+                      />
+                    </Label>
+                  </FormGroup>
+                </Card>
+              </div>
+              <div className='buttons-container'>
+                <Button id='button' icon="refresh" intent="danger" text="Reset Filters" />
+                <Button id='button' icon="arrow-right" intent="success" text="Search" onClick={this.onFormSubmit}/>
+              </div>
+            </form>
           </div>
           <div className='search-container'>
             <Card>Search results here...</Card>
