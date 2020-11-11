@@ -4,6 +4,7 @@ import {
 } from "@blueprintjs/core";
 import '../style/SearchFeature.css';
 import PageNavbar from './PageNavbar';
+import GoogleMap from './GoogleMap';
 import {
   FormGroup,
   InputGroup,
@@ -36,6 +37,7 @@ export default class SearchFeature extends React.Component {
       errorMessage: "",
       submittedData: "",
       passedQA: "",
+      searchResults: []
     }
   }
 
@@ -171,7 +173,6 @@ export default class SearchFeature extends React.Component {
           <div className="jumbotron">
             <div className="h5 title">Find a nursing home that fits your needs</div>
             <p>You are at latitude {this.state.latitude} and longitude {this.state.longitude}</p>
-            <p>{this.state.covidAdmission}</p>
             <form className='form' onSubmit={this.onFormSubmit}>
               <div className='form-container'>
                 <Card style={{width:"250px",margin:"20px"}}>
@@ -208,8 +209,7 @@ export default class SearchFeature extends React.Component {
                         min={0}
                         value={this.state.distance}
                         onValueChange={this.onDistanceChange}
-                      >
-                      </NumericInput>
+                      />
                     </Label>
                   </FormGroup>
                 </Card>
@@ -333,6 +333,7 @@ export default class SearchFeature extends React.Component {
             </form>
           </div>
           <div className='search-container'>
+            <GoogleMap/>
             <Card>Search results here...</Card>
           </div>
         </div>
