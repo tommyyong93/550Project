@@ -29,6 +29,7 @@ export default class SearchFeature extends React.Component {
       rating: null,
       covidAdmission: 0,
       confirmedCases: 0,
+      distance: 0,
       freeBeds: 0,
       latitude: null,
       longitude: null,
@@ -61,6 +62,8 @@ export default class SearchFeature extends React.Component {
     console.log(this.state.name)
     console.log(this.state.id)
     console.log(this.state.state)
+    console.log(this.state.provider)
+    console.log(this.state.distance)
   }
 
   onNameChange = (event) => {
@@ -80,6 +83,19 @@ export default class SearchFeature extends React.Component {
       state: event.target.value
     })
   }
+
+  onProviderChange = (event) => {
+    this.setState({
+      provider: event.target.value
+    })
+  }
+
+  onDistanceChange = (value) => {
+    this.setState({
+      distance: value
+    })
+  }
+
 
   render() {
     return (
@@ -117,7 +133,7 @@ export default class SearchFeature extends React.Component {
                       </Label>
                     </div>
                     <Label className="bp3-label" htmlFor="providerDropdown">Provider Type:
-                      <HTMLSelect id = "providerDropdown">
+                      <HTMLSelect id = "providerDropdown" onChange={this.onProviderChange}>
                         <option>-</option>
                         <option>Medicaid</option>
                         <option>Medicare</option>
@@ -128,6 +144,8 @@ export default class SearchFeature extends React.Component {
                       <NumericInput id="radius"
                         max={100}
                         min={0}
+                        value={this.state.distance}
+                        onValueChange={this.onDistanceChange}
                       >
                       </NumericInput>
                     </Label>
