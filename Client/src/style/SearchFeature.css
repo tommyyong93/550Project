@@ -1,3 +1,13 @@
+.jumbotron{
+  margin: auto;
+}
+
+.title{
+  margin: auto;
+  text-align: center;
+  font-size: 3em;
+}
+
 .form-container{
   display: flex;
   flex-wrap: wrap;
@@ -5,7 +15,8 @@
 }
 
 .card{
-  width: 500px;
+  margin: auto;
+  width: 400px;
 }
 
 .buttons-container{

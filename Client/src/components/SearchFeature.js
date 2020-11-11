@@ -58,28 +58,28 @@ export default class SearchFeature extends React.Component {
 
   render() {
     return (
-      <div className="Poster">
+      <div className="SearchFeature">
 
-        <PageNavbar active="posters" />
+        <PageNavbar />
 
 
         <br></br>
         <div className='container'>
           <div className="jumbotron">
-            <div className="h5">Find a nursing home that fits your needs</div>
+            <div className="h5 title">Find a nursing home that fits your needs</div>
             <p>You are at latitude {this.state.latitude} and longitude {this.state.longitude}</p>
             <p>{this.state.covidAdmission}</p>
             <div className='form-container'>
               <Card style={{width:"250px",margin:"20px"}}>
                 <FormGroup>
-                  <Label class="bp3-label" htmlFor="nameInput">Name:
+                  <Label className="bp3-label" htmlFor="nameInput">Name:
                     <InputGroup style={{width:"200px"}}></InputGroup>
                   </Label>
-                  <Label class="bp3-label" htmlFor="idInput">ID:
+                  <Label className="bp3-label" htmlFor="idInput">ID:
                     <InputGroup style={{width:"200px"}}></InputGroup>
                   </Label>
                   <div style={{width:"200px"}}>
-                    <Label class="bp3-label" htmlFor="stateDropdown">State:
+                    <Label className="bp3-label" htmlFor="stateDropdown">State:
                       <HTMLSelect id="stateDropdown" fill={false}>
                         <option>-</option>
                         <option>AL</option>
@@ -90,7 +90,7 @@ export default class SearchFeature extends React.Component {
                       </HTMLSelect>
                     </Label>
                   </div>
-                  <Label class="bp3-label" htmlFor="radius">Within distance from me (miles):
+                  <Label className="bp3-label" htmlFor="radius">Within distance from me (km):
                     <NumericInput id="radius"
                       max={100}
                       min={0}
@@ -102,7 +102,7 @@ export default class SearchFeature extends React.Component {
               <Card style={{width:"250px",margin:"20px"}}>
                 <FormGroup>
                   <div style={{width:"200px"}}>
-                    <Label class="bp3-label" htmlFor="providerDropdown">Provider Type:
+                    <Label className="bp3-label" htmlFor="providerDropdown">Provider Type:
                       <HTMLSelect id = "providerDropdown">
                         <option>-</option>
                         <option>Medicaid</option>
@@ -112,7 +112,7 @@ export default class SearchFeature extends React.Component {
                     </Label>
                   </div>
                   <div style={{width:"200px"}}>
-                    <Label class="bp3-label" htmlFor="ownershipDropdown">Ownership Type:
+                    <Label className="bp3-label" htmlFor="ownershipDropdown">Ownership Type:
                       <HTMLSelect id = "ownershipDropdown">
                         <option>-</option>
                         <option>For profit - Corporation</option>
@@ -131,7 +131,7 @@ export default class SearchFeature extends React.Component {
                     </Label>
                   </div>
                   <div style={{width:"200px"}}>
-                    <Label class="bp3-label" htmlFor="ownershipDropdown">Abuse Icon:
+                    <Label className="bp3-label" htmlFor="ownershipDropdown">Abuse Icon:
                       <HTMLSelect id = "ownershipDropdown">
                         <option>-</option>
                         <option>For profit - Corporation</option>
@@ -150,7 +150,7 @@ export default class SearchFeature extends React.Component {
                     </Label>
                   </div>
                   <div style={{width:"200px"}}>
-                    <Label class="bp3-label" htmlFor="ownershipDropdown">Overall Rating:
+                    <Label className="bp3-label" htmlFor="ownershipDropdown">Overall Rating:
                       <HTMLSelect id = "ownershipDropdown">
                         <option>-</option>
                         <option>For profit - Corporation</option>
@@ -223,12 +223,12 @@ export default class SearchFeature extends React.Component {
                 </FormGroup>
               </Card>
             </div>
-            <div class='buttons-container'>
+            <div className='buttons-container'>
               <Button id='button' icon="refresh" intent="danger" text="Reset Filters" />
               <Button id='button' icon="arrow-right" intent="success" text="Search" />
             </div>
           </div>
-          <div class='search-container'>
+          <div className='search-container'>
             <Card>Search results here...</Card>
           </div>
         </div>
