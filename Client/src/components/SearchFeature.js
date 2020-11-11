@@ -64,6 +64,7 @@ export default class SearchFeature extends React.Component {
     console.log(this.state.state)
     console.log(this.state.provider)
     console.log(this.state.distance)
+    console.log(this.state.ownership)
   }
 
   onNameChange = (event) => {
@@ -93,6 +94,12 @@ export default class SearchFeature extends React.Component {
   onDistanceChange = (value) => {
     this.setState({
       distance: value
+    })
+  }
+
+  onOwnershipChange = (event) => {
+    this.setState({
+      ownership: event.target.value
     })
   }
 
@@ -155,7 +162,7 @@ export default class SearchFeature extends React.Component {
                   <FormGroup>
                     <div style={{width:"200px"}}>
                       <Label className="bp3-label" htmlFor="ownershipDropdown">Ownership Type:
-                        <HTMLSelect id = "ownershipDropdown">
+                        <HTMLSelect id = "ownershipDropdown" onChange={this.onOwnershipChange}>
                           <option>-</option>
                           <option value="For profit - Corporation">For profit - Corporation</option>
                           <option value="For profit - Individual">For profit - Individual</option>
