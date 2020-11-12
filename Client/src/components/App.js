@@ -7,6 +7,7 @@ import {
 import FrontPage from './FrontPage'
 import StateStats from './StateStats';
 import SearchFeature from './SearchFeature';
+import NursingHomeProfile from './NursingHomeProfile';
 import "@blueprintjs/core/lib/css/blueprint.css"
 
 export default class App extends React.Component {
@@ -37,17 +38,23 @@ export default class App extends React.Component {
 							)}
       />
 						<Route
-							path="/featurethree"
+							path="/state"
 							render={() => (
 								<StateStats />
 							)}
       />
 						<Route
-							path="/featurefour"
+							path="/search"
 							render={() => (
 								<SearchFeature />
 							)}
-						/>
+      />
+            <Route
+              path="/profile"
+              render={() => (
+                <NursingHomeProfile />
+              )}
+            />
 					</Switch>
 				</Router>
 			</div>

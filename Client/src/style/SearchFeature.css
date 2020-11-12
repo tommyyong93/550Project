@@ -8,22 +8,50 @@
   font-size: 3em;
 }
 
-.form-container{
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center
-}
-
-.card{
+.search-navbar{
   margin: auto;
-  width: 400px;
+  height: 100px;
+  display: flex;
+  background-color: #DCDCDC !important;
 }
 
-.buttons-container{
+.mainSearch, .providerInfo-popdown, .additionalFilter-popdown, .stats-popdown{
+  padding: 10px;
+  margin: auto 2px;
+}
+
+.search-container-block{
+  width: 100%;
   display: flex;
-  justify-content: center;
+}
+
+.search-container-block:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.search-results-container{
+  float: left;
+  width: 25%;
+  height: 100vh;
+}
+
+.google-map-container{
+  float: left;
+  width: 75%;
+}
+
+.search-text{
+  margin: auto;
+  margin-right: 20px;
+}
+
+.bp3-slider{
+  margin: 5px auto !important;
+  width: 95% !important;
 }
 
 #button{
-  margin:15px;
+  margin: auto 10px;
 }
