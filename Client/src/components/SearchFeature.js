@@ -167,7 +167,7 @@ export default class SearchFeature extends React.Component {
         <PageNavbar/>
         <Navbar className="search-navbar" style={{height:"100px"}} >
           <Label className="bp3-label mainSearch" htmlFor="radius">Within distance (km):
-            <NumericInput id="radius" max={500} min={0} value={this.state.distance} onValueChange={this.onDistanceChange}/>
+            <NumericInput id="radius"  max={500} min={0} value={this.state.distance} onValueChange={this.onDistanceChange}/>
           </Label>
           <Popover className='providerInfo-popdown' content={
             <Menu>
@@ -292,11 +292,11 @@ export default class SearchFeature extends React.Component {
         </Navbar>
         <div className='search-container-block'>
           <Card className='search-results-container'>Search results here...</Card>
-          <GoogleMap
+          {/* <GoogleMap
             className='google-map-container'
             latitude={this.state.latitude ? this.state.latitude : 39.9526}
             longitude={this.state.longitude ? this.state.longitude : -75.1652}
-          />
+          /> */}
         </div>
       </div>
     )

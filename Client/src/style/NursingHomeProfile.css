@@ -12,25 +12,41 @@
 .top-row{
   width:100%;
   display: flex;
-  height: 20%;
+  height: 40%;
 }
 
 .profile-info{
   float: left;
   margin: auto;
-  width: 50%;
+  width: 40%;
+  height: 100%;
 }
 
 .static-map-container{
+  margin: 20px auto;
   float: left;
-  width: 40%;
+  align-items: flex-start;
+  width: 50%;
+  height: 100%;
+}
+
+.middle-row{
+  margin: auto;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  height : 40%
 }
 
 .bottom-row{
-  margin: auto;
-  width:100%;
+  width: 100%;
   display: flex;
-  height : 40%
+  height : 20%;
+  margin: 0 auto;
+  align-items: flex-start;
+  justify-content: center;
+  align-self: center;
+  align-content: center;
 }
 
 .ratings-card{
@@ -47,4 +63,9 @@
 .others-card{
   margin: auto;
   width: 30%;
+}
+
+.additional-card{
+  margin: 0;
+  width: 95%;
 }

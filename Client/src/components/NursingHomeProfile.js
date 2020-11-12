@@ -1,5 +1,6 @@
 import React from 'react';
 import PageNavbar from './PageNavbar'
+import ProfileMap from './ProfileMap'
 import {
   Card,
 } from "@blueprintjs/core";
@@ -10,7 +11,9 @@ export default class NursingHomeProfile extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-
+      name: "example nursing home",
+      latitide: 32.2226,
+      longitude: -110.9747,
     }
   }
 
@@ -34,19 +37,44 @@ export default class NursingHomeProfile extends React.Component {
               </div>
             </div>
             <div className='static-map-container'>
-              <h3>Put static google map here</h3>
+              {/* <ProfileMap
+                name={this.state.name}
+                latitude={this.state.latitude ? this.state.latitude : 39.9526}
+                longitude={this.state.longitude ? this.state.longitude : -75.1652}
+              /> */}
             </div>
           </div>
-          <div className='bottom-row'>
+          <div className='middle-row'>
             <Card className='ratings-card'>
-              Ratings...
+              <h2>Ratings...</h2>
+              <p>Ownership Type: </p>
+              <p>Provider Type: </p>
+              <p>Certified Beds: </p>
+              <p>Total Number of Occupied Beds: </p>
+              <p>Abuse Icon: </p>
+              <p>Etc...</p>
             </Card>
             <Card className='hours-card'>
-              Staff Hours...
+              <h2>Staff Hours...</h2>
+              <p>Ownership Type: </p>
+              <p>Provider Type: </p>
+              <p>Certified Beds: </p>
+              <p>Total Number of Occupied Beds: </p>
+              <p>Abuse Icon: </p>
+              <p>Etc...</p>
             </Card>
             <Card className='others-card'>
-              Other...
+              <h2>Other...</h2>
+              <p>Ownership Type: </p>
+              <p>Provider Type: </p>
+              <p>Certified Beds: </p>
+              <p>Total Number of Occupied Beds: </p>
+              <p>Abuse Icon: </p>
+              <p>Etc...</p>
             </Card>
+          </div>
+          <div className='bottom-row'>
+            <Card className='additional-card'>Anything else...</Card>
           </div>
         </div>
       </div>
