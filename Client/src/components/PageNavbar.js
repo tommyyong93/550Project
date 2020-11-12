@@ -4,6 +4,7 @@ import {
   Button,
   Alignment
 } from "@blueprintjs/core";
+import '../style/PageNavbar.css';
 
 export default class PageNavbar extends React.Component {
   constructor(props) {
@@ -16,14 +17,16 @@ export default class PageNavbar extends React.Component {
   render() {
     return (
       <Navbar>
-        <Navbar.Group align={Alignment.LEFT}>
+        <Navbar.Group className="navbar-heading"align={Alignment.LEFT}>
           <a href={"/"}><Button className="bp3-minimal" icon="home" /></a>
           <Navbar.Heading>Nurse Next Door</Navbar.Heading>
-          <Navbar.Divider />
+        </Navbar.Group>
+        <Navbar.Group align={Alignment.RIGHT}>
+          <a href={"/profile"}><Button className="bp3-minimal" text="Random Profile"/></a>
+          <a href={"/search"}><Button className="bp3-minimal" text="Search for a Nursing Home"/></a>
+          <a href={"/state"}><Button className="bp3-minimal" text="Statistics by State"/></a>
           <a href={"/featureone"}><Button className="bp3-minimal" text="featureone"/></a>
           <a href={"/featuretwo"}><Button className="bp3-minimal" text="featuretwo"/></a>
-          <a href={"/featurethree"}><Button className="bp3-minimal" text="Stats by State"/></a>
-          <a href={"/featurefour"}><Button className="bp3-minimal" text="Search for a Nursing Home"/></a>
         </Navbar.Group>
       </Navbar>
     );

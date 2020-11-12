@@ -12,6 +12,7 @@
   margin: auto;
   height: 100px;
   display: flex;
+  background-color: #DCDCDC !important;
 }
 
 .mainSearch, .providerInfo-popdown, .additionalFilter-popdown, .stats-popdown{
@@ -19,12 +20,12 @@
   margin: auto 2px;
 }
 
-.search-container{
+.search-container-block{
   width: 100%;
   display: flex;
 }
 
-.search-container:after {
+.search-container-block:after {
   content: "";
   display: table;
   clear: both;

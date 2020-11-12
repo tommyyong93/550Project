@@ -6,6 +6,7 @@ import {
   Button,
   Classes,
   Dialog,
+  Card,
 } from "@blueprintjs/core";
 
 export default class StateStats extends React.Component {
@@ -35,17 +36,13 @@ export default class StateStats extends React.Component {
 
   render() {
     return (
-      <div className="BestGenres">
-        <PageNavbar active="bestgenres" />
-        <br/>
-        <div className="title-container">
-          <div className="jumbotron">
-            <div className="h5">Statistics by State</div>
-          </div>
-          <br></br>
+      <div className="StateStats">
+        <PageNavbar/>
+        <div className='search-container-block'>
+          <Card className='state-results-container'>{this.state.selectedState ? `Here are the top nursing homes in ${this.state.selectedState}` : "Click on a state to learn more"}</Card>
           <div className="map-container">
-            <div>
-              <USAMap onClick={this.mapHandler} defaultFill="#00008B"/>
+            <div className='USA-Map'>
+              <USAMap onClick={this.mapHandler} defaultFill="#DCDCDC"/>
             </div>
             <Dialog
               onClose={this.handleClose}
@@ -64,17 +61,17 @@ export default class StateStats extends React.Component {
                 </p>
                 <p>
                   Average Rating...
-                  </p>
-                  <p>
-                    Here are some top rated Nursing Homes...
-                  </p>
+                </p>
+                <p>
+                  Here are some top rated Nursing Homes...
+                </p>
+              </div>
+              <div className={Classes.DIALOG_FOOTER}>
+                <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+                  <Button onClick={this.handleClose}>Close</Button>
                 </div>
-                <div className={Classes.DIALOG_FOOTER}>
-                  <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                    <Button onClick={this.handleClose}>Close</Button>
-                  </div>
-                </div>
-              </Dialog>
+              </div>
+            </Dialog>
           </div>
         </div>
 			</div>

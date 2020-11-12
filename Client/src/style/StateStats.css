@@ -1,10 +1,29 @@
-.title-container{
-  display: block;
-  text-align: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: auto;
-  margin-top: 10%;
-  margin-bottom: 50px;
+.StateStats{
+  background-color: white;
   width: 100%;
+}
+
+.state-results-container:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.state-results-container{
+  float: left;
+  width: 20%;
+  height: 100vh;
+}
+
+.map-container{
+  float: left;
+  width: 80%;
+  height: 100vh;
+  display: flex;
+  padding-top: 150px;
+}
+
+.USA-Map{
+  height: 100%;
+  margin: auto;
 }
