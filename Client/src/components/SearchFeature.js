@@ -32,8 +32,8 @@ export default class SearchFeature extends React.Component {
       confirmedCases: 0,
       distance: 0,
       freeBeds: 0,
-      latitude: 0,
-      longitude: 0,
+      latitude: 39.9526,
+      longitude: -75.1652,
       errorMessage: "",
       submittedData: "",
       passedQA: "",
@@ -151,8 +151,8 @@ export default class SearchFeature extends React.Component {
       confirmedCases: 0,
       distance: 0,
       freeBeds: 0,
-      latitude: 0,
-      longitude: 0,
+      latitude: 39.9526,
+      longitude: -75.1652,
       errorMessage: "",
       submittedData: "",
       passedQA: ""
@@ -333,8 +333,12 @@ export default class SearchFeature extends React.Component {
             </form>
           </div>
           <div className='search-container'>
-            <GoogleMap/>
-            <Card>Search results here...</Card>
+            <Card className='search-results-container'>Search results here...</Card>
+            <GoogleMap 
+              className='google-map-container'
+              latitude={this.state.latitude ? this.state.latitude : 39.9526}
+              longitude={this.state.longitude ? this.state.longitude : -75.1652}
+            />
           </div>
         </div>
       </div>

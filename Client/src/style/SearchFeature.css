@@ -19,6 +19,28 @@
   width: 400px;
 }
 
+.search-container{
+  width: 100%;
+  display: flex;
+}
+
+.search-container:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.search-results-container{
+  float: left;
+  width: 50%;
+  height: 100vh;
+}
+
+.google-map-container{
+  float: left;
+  width: 50%;
+}
+
 .buttons-container{
   display: flex;
   justify-content: center;
