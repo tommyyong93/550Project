@@ -39,7 +39,7 @@ export default class StateStats extends React.Component {
       <div className="StateStats">
         <PageNavbar/>
         <div className='search-container-block'>
-          <Card className='state-results-container'>{this.state.selectedState ? `Here are the top nursing homes in ${this.state.selectedState}` : "Click on a state to learn more"}</Card>
+          <Card className='state-results-container'>{this.state.selectedState ? `Here are the top nursing homes in ${this.state.selectedState}` : "Click on a state to learn more!"}</Card>
           <div className="map-container">
             <div className='USA-Map'>
               <USAMap onClick={this.mapHandler} defaultFill="#DCDCDC"/>
@@ -61,9 +61,6 @@ export default class StateStats extends React.Component {
                 </p>
                 <p>
                   Average Rating...
-                </p>
-                <p>
-                  Here are some top rated Nursing Homes...
                 </p>
               </div>
               <div className={Classes.DIALOG_FOOTER}>

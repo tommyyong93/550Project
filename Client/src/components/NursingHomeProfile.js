@@ -34,7 +34,7 @@ export default class NursingHomeProfile extends React.Component {
               </div>
             </div>
             <div className='static-map-container'>
-              <h3>Put static map here</h3>
+              <h3>Put static google map here</h3>
             </div>
           </div>
           <div className='bottom-row'>
