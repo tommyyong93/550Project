@@ -18,7 +18,7 @@ export default class PageNavbar extends React.Component {
       <Navbar>
         <Navbar.Group align={Alignment.LEFT}>
           <a href={"/"}><Button className="bp3-minimal" icon="home" /></a>
-          <Navbar.Heading>Find a nursing home!</Navbar.Heading>
+          <Navbar.Heading>Nurse Next Door</Navbar.Heading>
           <Navbar.Divider />
           <a href={"/featureone"}><Button className="bp3-minimal" text="featureone"/></a>
           <a href={"/featuretwo"}><Button className="bp3-minimal" text="featuretwo"/></a>

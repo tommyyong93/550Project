@@ -40,30 +40,30 @@ export default class StateStats extends React.Component {
         <br/>
         <div className="title-container">
           <div className="jumbotron">
-            <div className="h5">Stats by State</div>
+            <div className="h5">Statistics by State</div>
           </div>
           <br></br>
           <div className="map-container">
             <div>
               <USAMap onClick={this.mapHandler} defaultFill="#00008B"/>
             </div>
-              <Dialog
-                onClose={this.handleClose}
-                title= {`You selected ${this.state.selectedState}`}
-                isOpen={this.state.showPopup}
-              >
-                <div className={Classes.DIALOG_BODY}>
-                  <p>
-                    Number of Nursing Homes...
-                  </p>
-                  <p>
-                    Average Number of Beds...
-                  </p>
-                  <p>
-                    Average Occupancy..
-                  </p>
-                  <p>
-                    Average Rating...
+            <Dialog
+              onClose={this.handleClose}
+              title= {`You selected ${this.state.selectedState}`}
+              isOpen={this.state.showPopup}
+            >
+              <div className={Classes.DIALOG_BODY}>
+                <p>
+                  Number of Nursing Homes...
+                </p>
+                <p>
+                  Average Number of Beds...
+                </p>
+                <p>
+                  Average Occupancy..
+                </p>
+                <p>
+                  Average Rating...
                   </p>
                   <p>
                     Here are some top rated Nursing Homes...
