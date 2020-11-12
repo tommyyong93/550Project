@@ -8,15 +8,15 @@
   font-size: 3em;
 }
 
-.form-container{
+.search-navbar{
+  margin: auto;
+  height: 100px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center
 }
 
-.card{
-  margin: auto;
-  width: 400px;
+.mainSearch, .providerInfo-popdown, .additionalFilter-popdown, .stats-popdown{
+  padding: 10px;
+  margin: auto 2px;
 }
 
 .search-container{
@@ -32,20 +32,25 @@
 
 .search-results-container{
   float: left;
-  width: 50%;
+  width: 25%;
   height: 100vh;
 }
 
 .google-map-container{
   float: left;
-  width: 50%;
+  width: 75%;
 }
 
-.buttons-container{
-  display: flex;
-  justify-content: center;
+.search-text{
+  margin: auto;
+  margin-right: 20px;
+}
+
+.bp3-slider{
+  margin: 5px auto !important;
+  width: 95% !important;
 }
 
 #button{
-  margin:15px;
+  margin: auto 10px;
 }
