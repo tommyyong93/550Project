@@ -9,14 +9,16 @@ import '../style/PageNavbar.css';
 export default class PageNavbar extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+
+    }
   }
 
   componentDidMount() {}
 
   render() {
     return (
-      <Navbar>
+      <Navbar className='page-navbar'>
         <Navbar.Group className="navbar-heading"align={Alignment.LEFT}>
           <a href={"/"}><svg id="Capa_1" enableBackground="new 0 0 512 512" height="25" viewBox="0 0 512 512" width="25" xmlns="http://www.w3.org/2000/svg">
             <g><path d="m469.36 165.93v295.07h-426.72v-295.07l213.36-125.6z" fill="#e6f3ff"/><path d="m469.36 165.93v295.07h-213.36v-420.67z" fill="#bbe4f2"/><path d="m94 227.435h125.429v233.565h-125.429z" fill="#ffcf67"/>
@@ -27,7 +29,7 @@ export default class PageNavbar extends React.Component {
           <Navbar.Heading>&nbsp; Nurse Next Door</Navbar.Heading>
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
-          <a href={"/profile"}><Button className="bp3-minimal" text="Random Profile"/></a>
+          <a href={"/profile"}><Button className="bp3-minimal" text={this.props.selected ?  this.props.selected : "Random Profile"}/></a>
           <a href={"/search"}><Button className="bp3-minimal" text="Search for a Nursing Home"/></a>
           <a href={"/state"}><Button className="bp3-minimal" text="Statistics by State"/></a>
           <a href={"/featureone"}><Button className="bp3-minimal" text="featureone"/></a>

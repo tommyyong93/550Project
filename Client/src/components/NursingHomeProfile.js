@@ -11,16 +11,20 @@ export default class NursingHomeProfile extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      name: "example nursing home",
+      name: "Example nursing home",
       latitide: 32.2226,
       longitude: -110.9747,
     }
   }
 
+  componentDidMount() {
+    document.title = this.state.name
+  }
+
   render() {
     return (
       <div className="profile-page">
-        <PageNavbar/>
+        <PageNavbar selected={this.state.name}/>
         <div className='profile-page-card'>
           <div className='top-row'>
             <div className='profile-info'>
@@ -37,11 +41,11 @@ export default class NursingHomeProfile extends React.Component {
               </div>
             </div>
             <div className='static-map-container'>
-              {/* <ProfileMap
+              <ProfileMap
                 name={this.state.name}
                 latitude={this.state.latitude ? this.state.latitude : 39.9526}
                 longitude={this.state.longitude ? this.state.longitude : -75.1652}
-              /> */}
+              />
             </div>
           </div>
           <div className='middle-row'>
@@ -74,7 +78,12 @@ export default class NursingHomeProfile extends React.Component {
             </Card>
           </div>
           <div className='bottom-row'>
-            <Card className='additional-card'>Anything else...</Card>
+            <Card className='additional-card'>
+              <h2>Here are some similar nursing homes</h2>
+              <p>Nursing home 1</p>
+              <p>Nursing home 1</p>
+              <p>Nursing home 1</p>
+            </Card>
           </div>
         </div>
       </div>

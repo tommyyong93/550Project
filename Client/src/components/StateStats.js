@@ -42,7 +42,8 @@ export default class StateStats extends React.Component {
           <Card className='state-results-container'>{this.state.selectedState ? `Here are the top nursing homes in ${this.state.selectedState}` : "Click on a state to learn more!"}</Card>
           <div className="map-container">
             <div className='USA-Map'>
-              <USAMap onClick={this.mapHandler} defaultFill="#DCDCDC"/>
+              <USAMap
+                onClick={this.mapHandler} defaultFill="#DCDCDC"/>
             </div>
             <Dialog
               onClose={this.handleClose}
