@@ -6,8 +6,8 @@ const AnyReactComponent = ({
 }) => (
   <div style={{
     color: 'white',
-    background: 'red',
-    padding: '15px 10px',
+    background: 'blue',
+    padding: '10px 10px',
     display: 'inline-flex',
     textAlign: 'center',
     alignItems: 'center',
