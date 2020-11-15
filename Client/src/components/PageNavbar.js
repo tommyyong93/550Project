@@ -29,9 +29,9 @@ export default class PageNavbar extends React.Component {
           <Navbar.Heading>&nbsp; Nurse Next Door</Navbar.Heading>
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
-          <a href={"/profile"}><Button className="bp3-minimal" text={this.props.selected ?  this.props.selected : "Random Profile"}/></a>
-          <a href={"/search"}><Button className="bp3-minimal" text="Search for a Nursing Home"/></a>
-          <a href={"/state"}><Button className="bp3-minimal" text="Statistics by State"/></a>
+          <a href={"/profile"}><Button className={this.props.active === 'profile' ? "highlighted bp3-minimal" : "bp3-minimal"} text={this.props.selected ?  this.props.selected : "Random Profile"}/></a>
+          <a href={"/search"}><Button className={this.props.active === 'search' ? "highlighted bp3-minimal" : "bp3-minimal"} text="Search for a Nursing Home"/></a>
+          <a href={"/state"}><Button className={this.props.active === 'state' ? "highlighted bp3-minimal" : "bp3-minimal"} text="Statistics by State"/></a>
           <a href={"/featureone"}><Button className="bp3-minimal" text="featureone"/></a>
           <a href={"/featuretwo"}><Button className="bp3-minimal" text="featuretwo"/></a>
         </Navbar.Group>

@@ -1,3 +1,7 @@
 .page-navbar{
   border-bottom: solid #A9A9A9 2px;
 }
+
+.highlighted{
+  color : blue !important;
+}

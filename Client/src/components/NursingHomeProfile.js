@@ -24,7 +24,7 @@ export default class NursingHomeProfile extends React.Component {
   render() {
     return (
       <div className="profile-page">
-        <PageNavbar selected={this.state.name}/>
+        <PageNavbar selected={this.state.name} active="profile"/>
         <div className='profile-page-card'>
           <div className='top-row'>
             <div className='profile-info'>

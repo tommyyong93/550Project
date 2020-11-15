@@ -37,7 +37,7 @@ export default class StateStats extends React.Component {
   render() {
     return (
       <div className="StateStats">
-        <PageNavbar/>
+        <PageNavbar active="state"/>
         <div className='search-container-block'>
           <Card className='state-results-container'>{this.state.selectedState ? `Here are the top nursing homes in ${this.state.selectedState}` : "Click on a state to learn more!"}</Card>
           <div className="map-container">
