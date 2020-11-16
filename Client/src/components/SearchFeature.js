@@ -5,6 +5,7 @@ import {
 import '../style/SearchFeature.css';
 import PageNavbar from './PageNavbar';
 import GoogleMap from './GoogleMap';
+import NursingHomeRow from './NursingHomeRow';
 import {
   InputGroup,
   HTMLSelect,
@@ -40,17 +41,49 @@ export default class SearchFeature extends React.Component {
       errorMessage: "",
       submittedData: "",
       passedQA: "",
-      searchResults: []
+      searchResults: [],
+      markers: []
     }
   }
 
   componentDidMount() {
-    window.navigator.geolocation.getCurrentPosition((position) => this.setState({
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude
-    }), (err) => this.setState({
-      errorMessage: err.message
-    }))
+    if (this.props.location) {
+      if (this.props.location.state) {
+        if (this.props.location.state.markersFromFrontPage) {
+          this.setState({
+            markers: this.props.location.state.markersFromFrontPage
+          })
+        }
+        if (this.props.location.state.searchResultsFromFrontPage) {
+          var result = this.props.location.state.searchResultsFromFrontPage.map((result, i) => (
+            <NursingHomeRow
+              key={result.key}
+              name={result.name}
+              state={result.state}
+              id={result.id}
+              latitude={result.latitude}
+              longitude={result.longitude}
+              index={i+1}
+              onPositionChange={this.onPositionChange}
+            />
+          ))
+          if (result.length > 0) {
+            this.setState({
+              searchResults: result,
+              latitude: result[0].props.latitude,
+              longitude: result[0].props.longitude,
+            })
+          }
+        } else {
+          window.navigator.geolocation.getCurrentPosition((position) => this.setState({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          }), (err) => this.setState({
+            errorMessage: err.message
+          }))
+        }
+      }
+    }
   }
 
   getChangeHandler = (key: string) => {
@@ -61,20 +94,59 @@ export default class SearchFeature extends React.Component {
 
   onFormSubmit = (event) => {
     event.preventDefault();
-    console.log(this.state.name)
-    console.log(this.state.id)
-    console.log(this.state.state)
-    console.log(this.state.provider)
-    console.log(this.state.distance)
-    console.log(this.state.ownership)
-    console.log(this.state.abuseIcon)
-    console.log(this.state.submittedData)
-    console.log(this.state.passedQA)
-    console.log(this.state.rating)
-    console.log(this.state.avgResidents)
-    console.log(this.state.covidAdmission)
-    console.log(this.state.confirmedCases)
-    console.log(this.state.freeBeds)
+    fetch("http://localhost:8081/filter/" +
+        `${this.state.name === "" ? "default" : this.state.name}` +
+        `&${this.state.id === "" ? "default" : this.state.id}` +
+        `&${this.state.state === "" ? "default" : this.state.state}` +
+        `&${this.state.provider === "" ? "default" : this.state.provider}` +
+        `&${this.state.ownership === "" ? "default" : this.state.ownership}` +
+        `&${this.state.abuseIcon === "" ? "default" : this.state.abuseIcon}` +
+        `&${this.state.rating === "" ? "default" : this.state.rating}` +
+        `&${this.state.avgResidents === 0 ? "default" : this.state.avgResidents}` +
+        `&${this.state.covidAdmission === 0 ? "default" : this.state.covidAdmission}` +
+        `&${this.state.confirmedCases === 0 ? "default" : this.state.confirmedCases}` +
+        `&${this.state.freeBeds === 0 ? "default" : this.state.freeBeds}` +
+        `&${this.state.submittedData === "" ? "default" : this.state.submittedData}` +
+        `&${this.state.passedQA === "" ? "default" : this.state.passedQA}` +
+        `&${this.state.latitude === "" ? "default" : this.state.latitude}` +
+        `&${this.state.longitude === "" ? "default" : this.state.longitude}` +
+        `&${this.state.distance === 0 ? "default" : this.state.distance}`, {
+          method: 'GET'
+        })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        var length = queries.length;
+        var queriesArray = [];
+        var markersArray = [];
+        for (var i = 0; i < length; i++) {
+          queriesArray[i] = <NursingHomeRow
+            key={i + queries[i].ProviderName}
+            name={queries[i].ProviderName}
+            state={queries[i].State}
+            id={queries[i].FPN}
+            latitude={queries[i].Latitude}
+            longitude={queries[i].Longitude}
+            index={i+1}
+            onPositionChange={this.onPositionChange}
+                            />
+          if (i <= 250) {
+            if (queries[i].Latitude === 0.0) continue;
+            if (queries[i].Longitude === 0.0) continue;
+            markersArray[i] = {
+              key: queries[i].ProviderName,
+              lat: queries[i].Latitude,
+              long: queries[i].Longitude,
+              title: queries[i].ProviderName
+            }
+          }
+        }
+        this.setState({
+          searchResults: queriesArray,
+          markers: markersArray
+        })
+      })
+      .catch(err => console.log(err))
   }
 
   onNameChange = (event) => {
@@ -137,6 +209,13 @@ export default class SearchFeature extends React.Component {
     })
   }
 
+  onPositionChange = (lat, long) => {
+    this.setState({
+      latitude: lat,
+      longitude: long
+    })
+  }
+
   resetFilter = () => {
     this.setState({
       id: "",
@@ -155,7 +234,9 @@ export default class SearchFeature extends React.Component {
       longitude: -75.1652,
       errorMessage: "",
       submittedData: "",
-      passedQA: ""
+      passedQA: "",
+      searchResults: [],
+      markers: []
     })
   }
 
@@ -240,14 +321,14 @@ export default class SearchFeature extends React.Component {
               </div>
               <Label className="bp3-label" htmlFor="providerDropdown">Provider Type:
                 <HTMLSelect id="providerDropdown" onChange={this.onProviderChange} value={this.state.provider}>
-                  <option value="">-</option>
+                  <option value="%">-</option>
                   <option>Medicaid</option>
                   <option>Medicare</option>
                   <option>Medicare and Medicaid</option>
                 </HTMLSelect>
               </Label>
             </Menu>
-          } position={Position.BOTTO}>
+          } position={Position.BOTTOM}>
             <Button text="Nursing Home Information" />
           </Popover>
           <Popover className='additionalFilter-popdown' content={
@@ -281,15 +362,15 @@ export default class SearchFeature extends React.Component {
               <Label className="bp3-label" htmlFor="submittedCovidDropdown">Submitted Covid Data:
                 <HTMLSelect id="submittedCovidDropdown" onChange={this.onSubmittedChange} value={this.state.submittedData}>
                   <option value="">-</option>
-                  <option value="True">Yes</option>
-                  <option value="True">No</option>
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
                 </HTMLSelect>
               </Label>
               <Label className="bp3-label" htmlFor="qaDropdown">Passed QA Check:
                 <HTMLSelect id="qaDropdown" onChange={this.onQAChange} value={this.state.passedQA}>
                   <option value="">-</option>
-                  <option>Yes</option>
-                  <option>No</option>
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
                 </HTMLSelect>
               </Label>
               <Label className="bp3-label" htmlFor="ratingDropdown">Overall Rating:
@@ -336,11 +417,12 @@ export default class SearchFeature extends React.Component {
           </Navbar.Group>
         </Navbar>
         <div className='search-container-block'>
-          <Card className='search-results-container'>Search results here...</Card>
+          <Card className='search-results-container'>{this.state.searchResults.length === 0 ? "Search results here" : this.state.searchResults}</Card>
           <GoogleMap
             className='google-map-container'
-            latitude={this.state.latitude ? this.state.latitude : 39.9526}
-            longitude={this.state.longitude ? this.state.longitude : -75.1652}
+            latitude={this.state.latitude}
+            longitude={this.state.longitude}
+            markers = {this.state.markers}
           />
         </div>
       </div>

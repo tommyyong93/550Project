@@ -12,13 +12,37 @@ export default class NursingHomeProfile extends React.Component {
     super(props)
     this.state = {
       name: "Example nursing home",
-      latitide: 32.2226,
-      longitude: -110.9747,
+      latitude: "",
+      longitude: "",
+      state: ""
     }
   }
 
   componentDidMount() {
-    document.title = this.state.name
+    if (this.props.location) {
+      if (this.props.location.state) {
+        if (this.props.location.state.name) {
+          this.setState({
+            name: this.props.location.state.name
+          })
+        }
+        if (this.props.location.state.latitude) {
+          this.setState({
+            latitude: this.props.location.state.latitude
+          })
+        }
+        if (this.props.location.state.longitude) {
+          this.setState({
+            longitude: this.props.location.state.longitude
+          })
+        }
+        if (this.props.location.state.state) {
+          this.setState({
+            state: this.props.location.state.state
+          })
+        }
+      }
+    }
   }
 
   render() {
@@ -28,24 +52,27 @@ export default class NursingHomeProfile extends React.Component {
         <div className='profile-page-card'>
           <div className='top-row'>
             <div className='profile-info'>
-              <h1>Example Nursing Home</h1>
+              <h1>{this.state.name}</h1>
               <div>
-                <p>Adress: 1234 Road, Austin, TX, 12356</p>
+                <p>Lat: {this.state.latitude}</p>
+                <p>Long: {this.state.longitude}</p>
+                <p>State: {this.state.state}</p>
                 <p>Phone Number: 123-456-789</p>
                 <p>Ownership Type: </p>
                 <p>Provider Type: </p>
                 <p>Certified Beds: </p>
                 <p>Total Number of Occupied Beds: </p>
                 <p>Abuse Icon: </p>
-                <p>Etc...</p>
               </div>
             </div>
             <div className='static-map-container'>
-              <ProfileMap
-                name={this.state.name}
-                latitude={this.state.latitude ? this.state.latitude : 39.9526}
-                longitude={this.state.longitude ? this.state.longitude : -75.1652}
-              />
+              {this.state.latitude !== "" && this.state.longitude !== "" ?
+                <ProfileMap
+                  name={this.state.name}
+                  latitude={this.state.latitude}
+                  longitude={this.state.longitude}
+                />
+              : ""}
             </div>
           </div>
           <div className='middle-row'>

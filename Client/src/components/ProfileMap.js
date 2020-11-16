@@ -7,13 +7,14 @@ const AnyReactComponent = ({
   <div style={{
     color: 'white',
     background: 'blue',
-    padding: '10px 10px',
+    width: '23px',
+    height: '23px',
     display: 'inline-flex',
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: '100%',
-    transform: 'translate(-50%, -50%)'
+    borderRadius: '50%',
+    border: 'solid black 2px'
   }}>
     {text}
   </div>
@@ -32,7 +33,6 @@ export default class GoogleMap extends React.Component {
           <AnyReactComponent
             lat={this.props.latitude}
             lng={this.props.longitude}
-            text={this.props.name}
           />
         </GoogleMapReact>
       </div>

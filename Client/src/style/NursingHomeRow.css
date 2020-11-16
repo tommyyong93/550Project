@@ -1,0 +1,12 @@
+.nursinghome-row{
+  margin: 10px auto;
+}
+
+.nursinghome-id{
+  font-weight: bold;
+}
+
+.destinationClick{
+  cursor: pointer;
+  color: blue;
+}
