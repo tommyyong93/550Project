@@ -45,14 +45,14 @@ export default class App extends React.Component {
       />
 						<Route
 							path="/search"
-							render={() => (
-								<SearchFeature />
+							render={(props) => (
+								<SearchFeature {...props}/>
 							)}
       />
             <Route
-              path="/profile"
-              render={() => (
-                <NursingHomeProfile />
+              path="/profile/:id"
+              render={(props) => (
+                <NursingHomeProfile {...props}/>
               )}
             />
 					</Switch>

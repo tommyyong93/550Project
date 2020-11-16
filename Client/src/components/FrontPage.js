@@ -2,11 +2,15 @@ import React from 'react';
 import '../style/FrontPage.css';
 import PageNavbar from './PageNavbar';
 import {
+  Redirect
+} from "react-router-dom";
+import {
   InputGroup
 } from "@blueprintjs/core";
 
 
 export default class FrontPage extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -16,13 +20,55 @@ export default class FrontPage extends React.Component {
 
   onInputChange = (event) => {
     this.setState({
-      query: event.target.value
+      query: event.target.value,
+      redirect: false,
+      searchResults: [],
+      markers: []
     })
   }
 
   onFormSubmit = (event) => {
     event.preventDefault();
-    console.log(this.state.query)
+    if (this.state.query === "") return
+    fetch(`http://localhost:8081/search/${this.state.query}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        var length = queries.length;
+        var queriesArray = [];
+        var markersArray = [];
+        for (var i = 0; i < length; i++) {
+          queriesArray[i] = {
+            key: i + queries[i].ProviderName,
+            name: queries[i].ProviderName,
+            state: queries[i].State,
+            id: queries[i].FPN,
+            latitude: queries[i].Latitude,
+            longitude: queries[i].Longitude,
+            index: i + 1
+          }
+          if (i <= 100) {
+            if (queries[i].Latitude === 0.0) continue;
+            if (queries[i].Longitude === 0.0) continue;
+            markersArray[i] = {
+              key: queries[i].ProviderName,
+              lat: queries[i].Latitude,
+              long: queries[i].Longitude,
+              title: queries[i].ProviderName
+            }
+          }
+        }
+        this.setState({
+          searchResults: queriesArray,
+          markers: markersArray
+        })
+        this.setState({
+          redirect: true
+        })
+      })
+      .catch(err => console.log(err))
   }
 
 
@@ -39,6 +85,12 @@ export default class FrontPage extends React.Component {
           <form className='form' onSubmit={this.onFormSubmit}>
             <InputGroup placeholder="Enter a city, state or ZIP code" leftIcon="search" value={this.state.query} onChange={this.onInputChange}
               onSubmit={this.onFormSubmit}></InputGroup>
+            {this.state.redirect ?
+              <Redirect to={{
+                pathname: '/search',
+                state: { markersFromFrontPage: this.state.markers, searchResultsFromFrontPage : this.state.searchResults }
+              }}
+              /> : ""}
           </form>
         </div>
       </div>

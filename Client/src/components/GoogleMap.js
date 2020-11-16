@@ -1,19 +1,20 @@
 import React from 'react';
 import GoogleMapReact from 'google-map-react';
 
-const AnyReactComponent = ({
+const MarkerComponent = ({
   text
 }) => (
   <div style={{
     color: 'white',
-    background: 'blue',
-    padding: '15px 10px',
+    background: 'red',
+    width: '23px',
+    height: '23px',
     display: 'inline-flex',
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: '100%',
-    transform: 'translate(-50%, -50%)'
+    borderRadius: '50%',
+    border: 'solid black 2px'
   }}>
     {text}
   </div>
@@ -21,19 +22,24 @@ const AnyReactComponent = ({
 
 export default class GoogleMap extends React.Component {
 
+
   render() {
     return (
       <div style={{ height: '100vh', width: '100%' }}>
         <GoogleMapReact
           bootstrapURLKeys={{ key:process.env.REACT_APP_GOOGLE_API_KEY}}
-          defaultCenter={{lat : this.props.latitude,lng:this.props.longitude}}
-          defaultZoom={11}
+          center={{lat : this.props.latitude,lng: this.props.longitude}}
+          zoom={11}
         >
-          <AnyReactComponent
-            lat={this.props.latitude}
-            lng={this.props.longitude}
-            text="My Marker"
-          />
+          {this.props.markers && this.props.markers.length > 0 &&
+            this.props.markers.map((marker,i) => (
+              <MarkerComponent
+                key={marker.title}
+                lat={marker.lat}
+                lng={marker.long}
+                text={i+1}
+              />
+            ))}
         </GoogleMapReact>
       </div>
     );
