@@ -16,7 +16,7 @@ import {
   Navbar,
   Popover,
   Menu,
-  Position,
+  Position
 } from "@blueprintjs/core";
 
 export default class SearchFeature extends React.Component {
@@ -391,19 +391,19 @@ export default class SearchFeature extends React.Component {
           <Popover className='stats-popdown' content={
             <Menu style={{width:"400px"}}>
               <Label>
-                Average Number Of Residents
+                Average Number Of Residents:
                 <Slider min={0} max={800} stepSize={1} labelStepSize={100} value={this.state.avgResidents} onChange={this.getChangeHandler("avgResidents")}/>
               </Label>
               <Label>
-                Total Covid Admissions
+                Total Covid Admissions:
                 <Slider min={0} max={400} stepSize={1} labelStepSize={100} value={this.state.covidAdmission} onChange={this.getChangeHandler("covidAdmission")}/>
               </Label>
               <Label>
-                Total Confirmed Covid Cases
+                Total Confirmed Covid Cases:
                 <Slider min={0} max={45000} stepSize={1} labelStepSize={10000} value={this.state.confirmedCases} onChange={this.getChangeHandler("confirmedCases")}/>
               </Label>
               <Label>
-                Number of Free Beds
+                Number of Free Beds:
                 <Slider min={0} max={400} stepSize={1} labelStepSize={50} value={this.state.freeBeds} onChange={this.getChangeHandler("freeBeds")}/>
               </Label>
             </Menu>
@@ -417,7 +417,14 @@ export default class SearchFeature extends React.Component {
           </Navbar.Group>
         </Navbar>
         <div className='search-container-block'>
-          <Card className='search-results-container'>{this.state.searchResults.length === 0 ? "Search results here" : this.state.searchResults}</Card>
+          <Card className='search-results-container'>
+            {this.state.searchResults.length === 0 ?
+            "Search results here..." :
+            <div>
+              Showing {Math.min(this.state.searchResults.length,250)} of {this.state.searchResults.length} results in this area.
+              {this.state.searchResults}
+            </div>
+            }</Card>
           <GoogleMap
             className='google-map-container'
             latitude={this.state.latitude}
