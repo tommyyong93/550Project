@@ -4,7 +4,7 @@ var routes = require("./routes.js");
 const cors = require('cors');
 
 const app = express();
-
+/* test*/ 
 app.use(cors({
   credentials: true,
   origin: 'http://localhost:3000'
