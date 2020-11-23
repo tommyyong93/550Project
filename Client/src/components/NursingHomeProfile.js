@@ -20,6 +20,8 @@ export default class NursingHomeProfile extends React.Component {
       ProviderType: "",
       NumberOfAllBeds: "",
       TotalNumberOfOccupiedBeds: "",
+      submittedData: "",
+      passedQA: "",
     }
   }
 
