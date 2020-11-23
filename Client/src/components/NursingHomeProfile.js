@@ -37,7 +37,25 @@ export default class NursingHomeProfile extends React.Component {
       NumPaymentDenials: "",
       NumPenalties: "",
       ResidentsTotalCovidDeaths: "",
-      NumVentilatorsInFacility: ""
+      NumVentilatorsInFacility: "",
+      StateAvgOverallRating: "",
+      StateAvgHealthInspRating: "",
+      StateAvgStaffRating: "",
+      StateAvgQMRating: "",
+      StateAvgAverageHrsPerResPerDay: "",
+      StateAvgReportedIncidents: "",
+      StateAvgComplaints: "",
+      StateAvgCovidDeaths: "",
+      StateAvgVentilatorsInFacility: "",
+      OverallAvgOverallRating: "",
+      OverallAvgHealthInspRating: "",
+      OverallAvgStaffRating: "",
+      OverallAvgQMRating: "",
+      OverallAvgAverageHrsPerResPerDay: "",
+      OverallAvgReportedIncidents: "",
+      OverallAvgComplaints: "",
+      OverallAvgCovidDeaths: "",
+      OverallAvgVentilatorsInFacility: ""
     }
   }
 
@@ -106,7 +124,52 @@ export default class NursingHomeProfile extends React.Component {
           NumVentilatorsInFacility: queryObj.NumVentilatorsInFacility
         })
       })
-      .catch(err => console.log(err))	
+      .catch(err => console.log(err));	
+
+
+    fetch(`http://localhost:8081/stateAvg/${this.props.location.state.state}`, {
+      method: 'GET'
+    })
+      .then(res => res.json()) 
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries);
+        let queryObj = queries[0];    
+        this.setState({
+          StateAvgOverallRating: queryObj.StateAvgOverallRating,
+          StateAvgHealthInspRating: queryObj.StateAvgHealthInspRating,
+          StateAvgStaffRating: queryObj.StateAvgStaffRating,
+          StateAvgQMRating: queryObj.StateAvgQMRating,
+          StateAvgAverageHrsPerResPerDay: queryObj.StateAvgAverageHrsPerResPerDay,
+          StateAvgReportedIncidents: queryObj.StateAvgReportedIncidents,
+          StateAvgComplaints: queryObj.StateAvgComplaints,
+          StateAvgCovidDeaths: queryObj.StateAvgCovidDeaths,
+          StateAvgVentilatorsInFacility: queryObj.StateAvgVentilatorsInFacility
+        })
+      })
+      .catch(err => console.log(err));	
+
+    fetch(`http://localhost:8081/overallAvg`, {
+      method: 'GET'
+    })
+      .then(res => res.json()) 
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries);
+        let queryObj = queries[0];    
+        this.setState({
+          OverallAvgOverallRating: queryObj.OverallAvgOverallRating,
+          OverallAvgHealthInspRating: queryObj.OverallAvgHealthInspRating,
+          OverallAvgStaffRating: queryObj.OverallAvgStaffRating,
+          OverallAvgQMRating: queryObj.OverallAvgQMRating,
+          OverallAvgAverageHrsPerResPerDay: queryObj.OverallAvgAverageHrsPerResPerDay,
+          OverallAvgReportedIncidents: queryObj.OverallAvgReportedIncidents,
+          OverallAvgComplaints: queryObj.OverallAvgComplaints,
+          OverallAvgCovidDeaths: queryObj.OverallAvgCovidDeaths,
+          OverallAvgVentilatorsInFacility: queryObj.OverallAvgVentilatorsInFacility
+        })
+      })
+      .catch(err => console.log(err));	
   }
 
   render() {
@@ -145,7 +208,6 @@ export default class NursingHomeProfile extends React.Component {
               <p>Health Inspection Rating: {this.state.HealthInspectionRating} </p>
               <p>Staffing Rating: {this.state.StaffingRating}</p>
               <p>Quality Measure Rating: {this.state.QMRating}</p>
-              <p>Survey Score: {this.state.TotalWeightedHealthSurveyScore}</p>
               <p>Reported Incidents #: {this.state.NumReportedIncidents}</p>
               <p>Substantiated Complaints #: {this.state.NumSubstantiatedComplaints}</p>
               <p>Fines #: {this.state.NumFines}</p>
@@ -153,22 +215,32 @@ export default class NursingHomeProfile extends React.Component {
               <p>Penalties #: {this.state.NumPenalties}</p>
             </Card>
             <Card className='hours-card'>
-              <h2>Staff Hours...</h2>
-              <p>Ownership Type: </p>
-              <p>Provider Type: </p>
-              <p>Certified Beds: </p>
-              <p>Total Number of Occupied Beds: </p>
-              <p>Abuse Icon: </p>
-              <p>Etc...</p>
+              <h2>State Averages </h2>
+              <p>{this.state.state} Avg Covid Deaths #: {this.state.StateAvgCovidDeaths}</p>
+              <p>{this.state.state} Avg Ventilators #: {this.state.StateAvgVentilatorsInFacility}</p>
+              <p>{this.state.state} Avg Overall Rating: {this.state.StateAvgOverallRating}</p>
+              <p>{this.state.state} Avg Health Inspection Rating: {this.state.StateAvgHealthInspRating} </p>
+              <p>{this.state.state} Avg Staffing Rating: {this.state.StateAvgStaffRating}</p>
+              <p>{this.state.state} Avg Quality Measure Rating: {this.state.StateAvgQMRating}</p>
+              <p>{this.state.state} Avg Reported Incidents #: {this.state.StateAvgReportedIncidents}</p>
+              <p>{this.state.state} Avg Substantiated Complaints #: {this.state.StateAvgComplaints}</p>
+              <p>{this.state.state} Avg Fines #: </p>
+              <p>{this.state.state} Avg Payment Denials #: </p>
+              <p>{this.state.state} Avg Penalties #: </p>
             </Card>
             <Card className='others-card'>
-              <h2>Other...</h2>
-              <p>Ownership Type: </p>
-              <p>Provider Type: </p>
-              <p>Certified Beds: </p>
-              <p>Total Number of Occupied Beds: </p>
-              <p>Abuse Icon: </p>
-              <p>Etc...</p>
+              <h2>Overall Averages </h2>
+              <p>Avg Covid Deaths #: {this.state.OverallAvgCovidDeaths}</p>
+              <p>Avg Ventilators #: {this.state.OverallAvgVentilatorsInFacility}</p>
+              <p>Avg Overall Rating: {this.state.OverallAvgOverallRating}</p>
+              <p>Avg Health Inspection Rating: {this.state.OverallAvgHealthInspRating} </p>
+              <p>Avg Staffing Rating: {this.state.OverallAvgStaffRating}</p>
+              <p>Avg Quality Measure Rating: {this.state.OverallAvgQMRating}</p>
+              <p>Avg Reported Incidents #: {this.state.OverallAvgReportedIncidents}</p>
+              <p>Avg Substantiated Complaints #: {this.state.OverallAvgComplaints}</p>
+              <p>Avg Fines #: </p>
+              <p>Avg Payment Denials #: </p>
+              <p>Avg Penalties #: </p>
             </Card>
           </div>
           <div className='bottom-row'>
