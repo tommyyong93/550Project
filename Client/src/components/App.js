@@ -25,19 +25,6 @@ export default class App extends React.Component {
 							)}
       />
 						<Route
-							exact
-							path="/featureone"
-							render={() => (
-								<FrontPage />
-							)}
-      />
-						<Route
-							path="/featuretwo"
-							render={() => (
-								<FrontPage />
-							)}
-      />
-						<Route
 							path="/state"
 							render={() => (
 								<StateStats />
