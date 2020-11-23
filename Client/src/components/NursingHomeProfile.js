@@ -5,20 +5,43 @@ import {
   Card,
 } from "@blueprintjs/core";
 import '../style/NursingHomeProfile.css';
+import NursingHomeRow from './NursingHomeRow';
 
 export default class NursingHomeProfile extends React.Component {
 
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      name: "Example nursing home",
+      name: "Example Nursing Home",
       latitude: "",
       longitude: "",
-      state: ""
+      state: "",
+      OwnershipType: "",
+      ProviderType: "",
+      NumberOfAllBeds: "",
+      TotalNumberOfOccupiedBeds: "",
     }
   }
 
   componentDidMount() {
+    // get all individual nursing home info from FPN selected 
+    fetch("http://localhost:8081/profile/" + this.props.FPN, {
+      method: 'GET'
+    })
+      .then(res => res.json()) 
+      .then(queries => {
+        if (!queries) return;
+        //console.log(queries);
+        let queryObj = queries[0];    
+        this.setState({
+          OwnershipType: queryObj.OwnershipType,
+          ProviderType: queryObj.ProviderType,
+          NumberOfAllBeds: queryObj.NumberOfAllBeds,
+          TotalNumberOfOccupiedBeds: queryObj.TotalNumberOfOccupiedBeds
+        })
+      })
+      .catch(err => console.log(err))	
+    
     if (this.props.location) {
       if (this.props.location.state) {
         if (this.props.location.state.name) {
@@ -58,10 +81,10 @@ export default class NursingHomeProfile extends React.Component {
                 <p>Long: {this.state.longitude}</p>
                 <p>State: {this.state.state}</p>
                 <p>Phone Number: 123-456-789</p>
-                <p>Ownership Type: </p>
-                <p>Provider Type: </p>
-                <p>Certified Beds: </p>
-                <p>Total Number of Occupied Beds: </p>
+                <p>Ownership Type: {this.state.OwnershipType} </p>
+                <p>Provider Type: {this.state.ProviderType} </p>
+                <p>Certified Beds: {this.state.NumberOfAllBeds} </p>
+                <p>Total Number of Occupied Beds: {this.state.TotalNumberOfOccupiedBeds} </p>
                 <p>Abuse Icon: </p>
               </div>
             </div>
