@@ -371,6 +371,7 @@ function overallAvg(req, res) {
   SELECT AVG(cms.OverallRating) AS OverallAvgOverallRating, AVG(cms.HealthInspectionRating) AS OverallAvgHealthInspRating, AVG(cms.StaffingRating) AS OverallAvgStaffRating, AVG(cms.QMRating) AS OverallAvgQMRating, AVG((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS OverallAvgAverageHrsPerResPerDay, AVG(cms.NumReportedIncidents) AS OverallAvgReportedIncidents, AVG(cms.NumSubstantiatedComplaints) AS OverallAvgComplaints, AVG(cov.ResidentsTotalCovidDeaths) AS OverallAvgCovidDeaths, AVG(cov.NumVentilatorsInFacility) AS OverallAvgVentilatorsInFacility
   FROM Locations l JOIN CMSData cms ON l.FPN = cms.FPN JOIN COVIDData cov ON l.FPN = cov.FPN;
 `;
+  console.log(query);
   connection.query(query, function (err, rows, fields) {
     if (err) console.log(err);
     else {
@@ -388,6 +389,7 @@ function stateAvg(req, res) {
   GROUP BY l.State
   HAVING l.State = '${state}';
   `;
+  console.log(query);
   connection.query(query, function (err, rows, fields) {
     if (err) console.log(err);
     else {
