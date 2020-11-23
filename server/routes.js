@@ -347,15 +347,18 @@ function getLongitude(req, res) {
 function profileInfo(req, res) {
   var varFPN = req.params.FPN;
   var query = `
-  SELECT OwnershipType, ProviderType, NumberOfAllBeds, TotalNumberOfOccupiedBeds, AveResidentsPerDay,
+  SELECT ProviderName, OwnershipType, ProviderType, NumberOfAllBeds, TotalNumberOfOccupiedBeds, AveResidentsPerDay,
   OverallRating, HealthInspectionRating, StaffingRating, QMRating, TotalWeightedHealthSurveyScore, NumReportedIncidents,
-  NumSubstantiatedComplaints, NumFines, NumPaymentDenials, NumPenalties, TotalResidentCovidDeathsPer1000, NumVentilatorsInFacility,
+  NumSubstantiatedComplaints, NumFines, NumPaymentDenials, NumPenalties, ResidentsTotalCovidDeaths, NumVentilatorsInFacility,
   Address, City, State, Zip, CountyName, Phone
-  FROM Locations l JOIN Providers p ON p.FPN=l.FPN JOIN CMSData cm ON cm.FPN=p.FPN JOIN COVIDData c ON c.FPN=cm.FPN;
+  FROM Locations l JOIN Providers p ON p.FPN=l.FPN JOIN CMSData cm ON cm.FPN=p.FPN JOIN COVIDData c ON c.FPN=cm.FPN
+  WHERE p.FPN ='${varFPN}';
 `;
+  console.log(query);
   connection.query(query, function (err, rows, fields) {
     if (err) console.log(err);
     else {
+      console.log(rows);
       res.json(rows);
     }
   });
