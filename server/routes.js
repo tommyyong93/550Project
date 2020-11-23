@@ -368,7 +368,7 @@ function profileInfo(req, res) {
 
 function overallAvg(req, res) {
   var query = `
-  SELECT AVG(cms.OverallRating) AS OverallAvgOverallRating, AVG(cms.HealthInspectionRating) AS OverallAvgHealthInspRating, AVG(cms.StaffingRating) AS OverallAvgStaffRating, AVG(cms.QMRating) AS OverallAvgQMRating, AVG((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS OverallAvgAverageHrsPerResPerDay, AVG(cms.NumReportedIncidents) AS OverallAvgReportedIncidents, AVG(cms.NumSubstantiatedComplaints) AS OverallAvgComplaints, AVG(cov.ResidentsTotalCovidDeaths) AS OverallAvgCovidDeaths, AVG(cov.NumVentilatorsInFacility) AS OverallAvgVentilatorsInFacility
+  SELECT AVG(cms.OverallRating) AS OverallAvgOverallRating, AVG(cms.HealthInspectionRating) AS OverallAvgHealthInspRating, AVG(cms.StaffingRating) AS OverallAvgStaffRating, AVG(cms.QMRating) AS OverallAvgQMRating, AVG((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS OverallAvgAverageHrsPerResPerDay, AVG(cms.NumReportedIncidents) AS OverallAvgReportedIncidents, AVG(cms.NumSubstantiatedComplaints) AS OverallAvgComplaints, AVG(cms.NumFines) AS OverallAvgNumFines, AVG(cms.NumPenalties) AS OverallAvgNumPenalties, AVG(cov.ResidentsTotalCovidDeaths) AS OverallAvgCovidDeaths, AVG(cov.NumVentilatorsInFacility) AS OverallAvgVentilatorsInFacility
   FROM Locations l JOIN CMSData cms ON l.FPN = cms.FPN JOIN COVIDData cov ON l.FPN = cov.FPN;
 `;
   console.log(query);
@@ -384,7 +384,7 @@ function overallAvg(req, res) {
 function stateAvg(req, res) {
   var state = req.params.state;
   var query = `
-  SELECT l.State, AVG(cms.OverallRating) AS StateAvgOverallRating, AVG(cms.HealthInspectionRating) AS StateAvgHealthInspRating, AVG(cms.StaffingRating) AS StateAvgStaffRating, AVG(cms.QMRating) AS StateAvgQMRating, AVG((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS StateAvgAverageHrsPerResPerDay, AVG(cms.NumReportedIncidents) AS StateAvgReportedIncidents, AVG(cms.NumSubstantiatedComplaints) AS StateAvgComplaints, AVG(cov.ResidentsTotalCovidDeaths) AS StateAvgCovidDeaths, AVG(cov.NumVentilatorsInFacility) AS StateAvgVentilatorsInFacility
+  SELECT l.State, AVG(cms.OverallRating) AS StateAvgOverallRating, AVG(cms.HealthInspectionRating) AS StateAvgHealthInspRating, AVG(cms.StaffingRating) AS StateAvgStaffRating, AVG(cms.QMRating) AS StateAvgQMRating, AVG((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS StateAvgAverageHrsPerResPerDay, AVG(cms.NumReportedIncidents) AS StateAvgReportedIncidents, AVG(cms.NumSubstantiatedComplaints) AS StateAvgComplaints, AVG(cms.NumFines) AS StateAvgNumFines, AVG(cms.NumPenalties) AS StateAvgNumPenalties, AVG(cov.ResidentsTotalCovidDeaths) AS StateAvgCovidDeaths, AVG(cov.NumVentilatorsInFacility) AS StateAvgVentilatorsInFacility
   FROM Locations l JOIN CMSData cms ON l.FPN = cms.FPN JOIN COVIDData cov ON l.FPN = cov.FPN
   GROUP BY l.State
   HAVING l.State = '${state}';

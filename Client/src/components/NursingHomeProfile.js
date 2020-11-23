@@ -47,6 +47,8 @@ export default class NursingHomeProfile extends React.Component {
       StateAvgComplaints: "",
       StateAvgCovidDeaths: "",
       StateAvgVentilatorsInFacility: "",
+      StateAvgNumFines: "",
+      StateAvgNumPenalties: "",
       OverallAvgOverallRating: "",
       OverallAvgHealthInspRating: "",
       OverallAvgStaffRating: "",
@@ -54,8 +56,12 @@ export default class NursingHomeProfile extends React.Component {
       OverallAvgAverageHrsPerResPerDay: "",
       OverallAvgReportedIncidents: "",
       OverallAvgComplaints: "",
+      OverallAvgNumFines: "",
+      OverallAvgNumPenalties: "",
       OverallAvgCovidDeaths: "",
-      OverallAvgVentilatorsInFacility: ""
+      OverallAvgVentilatorsInFacility: "",
+      StateRank: "",
+      OverallRank: ""
     }
   }
 
@@ -143,6 +149,8 @@ export default class NursingHomeProfile extends React.Component {
           StateAvgAverageHrsPerResPerDay: queryObj.StateAvgAverageHrsPerResPerDay,
           StateAvgReportedIncidents: queryObj.StateAvgReportedIncidents,
           StateAvgComplaints: queryObj.StateAvgComplaints,
+          StateAvgNumFines: queryObj.StateAvgNumFines,
+          StateAvgNumPenalties: queryObj.StateAvgNumPenalties,
           StateAvgCovidDeaths: queryObj.StateAvgCovidDeaths,
           StateAvgVentilatorsInFacility: queryObj.StateAvgVentilatorsInFacility
         })
@@ -165,11 +173,28 @@ export default class NursingHomeProfile extends React.Component {
           OverallAvgAverageHrsPerResPerDay: queryObj.OverallAvgAverageHrsPerResPerDay,
           OverallAvgReportedIncidents: queryObj.OverallAvgReportedIncidents,
           OverallAvgComplaints: queryObj.OverallAvgComplaints,
+          OverallAvgNumFines: queryObj.OverallAvgNumFines,
+          OverallAvgNumPenalties: queryObj.OverallAvgNumPenalties,
           OverallAvgCovidDeaths: queryObj.OverallAvgCovidDeaths,
           OverallAvgVentilatorsInFacility: queryObj.OverallAvgVentilatorsInFacility
         })
       })
-      .catch(err => console.log(err));	
+      .catch(err => console.log(err));
+      
+    fetch(`http://localhost:8081/rank/${this.props.location.state.id}/${this.props.location.state.state}`, {
+      method: 'GET'
+    })
+      .then(res => res.json()) 
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries);
+        let queryObj = queries[0];    
+        this.setState({
+          StateRank: queryObj.StateRank,
+          OverallRank: queryObj.OverallRank
+        })
+      })
+      .catch(err => console.log(err));
   }
 
   render() {
@@ -187,6 +212,8 @@ export default class NursingHomeProfile extends React.Component {
                 <p>Provider Type: {this.state.ProviderType} </p>
                 <p>Occupied Beds (as of 11/1): {this.state.TotalNumberOfOccupiedBeds}/{this.state.NumberOfAllBeds}</p>
                 <p>Average # Residents Per Day: {this.state.AveResidentsPerDay}</p>
+                <p>State Rank: {this.state.StateRank}</p>
+                <p>Overall Rank: {this.state.OverallRank}</p>
               </div>
             </div>
             <div className='static-map-container'>
@@ -211,7 +238,6 @@ export default class NursingHomeProfile extends React.Component {
               <p>Reported Incidents #: {this.state.NumReportedIncidents}</p>
               <p>Substantiated Complaints #: {this.state.NumSubstantiatedComplaints}</p>
               <p>Fines #: {this.state.NumFines}</p>
-              <p>Payment Denials #: {this.state.NumPaymentDenials}</p>
               <p>Penalties #: {this.state.NumPenalties}</p>
             </Card>
             <Card className='hours-card'>
@@ -224,9 +250,8 @@ export default class NursingHomeProfile extends React.Component {
               <p>{this.state.state} Avg Quality Measure Rating: {this.state.StateAvgQMRating}</p>
               <p>{this.state.state} Avg Reported Incidents #: {this.state.StateAvgReportedIncidents}</p>
               <p>{this.state.state} Avg Substantiated Complaints #: {this.state.StateAvgComplaints}</p>
-              <p>{this.state.state} Avg Fines #: </p>
-              <p>{this.state.state} Avg Payment Denials #: </p>
-              <p>{this.state.state} Avg Penalties #: </p>
+              <p>{this.state.state} Avg Fines #: {this.state.StateAvgNumFines}</p>
+              <p>{this.state.state} Avg Penalties #: {this.state.StateAvgNumPenalties}</p>
             </Card>
             <Card className='others-card'>
               <h2>Overall Averages </h2>
@@ -238,9 +263,8 @@ export default class NursingHomeProfile extends React.Component {
               <p>Avg Quality Measure Rating: {this.state.OverallAvgQMRating}</p>
               <p>Avg Reported Incidents #: {this.state.OverallAvgReportedIncidents}</p>
               <p>Avg Substantiated Complaints #: {this.state.OverallAvgComplaints}</p>
-              <p>Avg Fines #: </p>
-              <p>Avg Payment Denials #: </p>
-              <p>Avg Penalties #: </p>
+              <p>Avg Fines #: {this.state.OverallAvgNumFines}</p>
+              <p>Avg Penalties #: {this.state.OverallAvgNumPenalties}</p>
             </Card>
           </div>
           <div className='bottom-row'>
