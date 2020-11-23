@@ -41,6 +41,29 @@ export default class StateStats extends React.Component {
         <div className='search-container-block'>
           <Card className='state-results-container'>{this.state.selectedState ? `Here are the top nursing homes in ${this.state.selectedState}` : "Click on a state to learn more!"}</Card>
           <div className="map-container">
+            <div className='country-row'>
+              <Card className='country-stats-card'>
+                <h1>Country Stats</h1>
+                <div className='stats-country'>
+                  <div className='single-stat'>
+                    <p>Total Number of Nursing Homes</p>
+                    <p>15000</p>
+                  </div>
+                  <div className='single-stat'>
+                    <p>Total Number of Fines in Nursing Homes</p>
+                    <p>15000</p>
+                  </div>
+                  <div className='single-stat'>
+                    <p>Total Covid Admission in Nursing Homes</p>
+                    <p>15000</p>
+                  </div>
+                  <div className='single-stat'>
+                    <p>Total Number of Deaths from COVID-19 in Nursing Homes</p>
+                    <p>15000</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
             <div className='USA-Map'>
               <USAMap
                 onClick={this.mapHandler} defaultFill="#DCDCDC"/>
