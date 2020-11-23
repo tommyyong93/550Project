@@ -14,7 +14,9 @@ export default class NursingHomeProfile extends React.Component {
       name: "Example nursing home",
       latitude: "",
       longitude: "",
-      state: ""
+      state: "",
+      submittedData: "",
+      passedQA: "",
     }
   }
 
