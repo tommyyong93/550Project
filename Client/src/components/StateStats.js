@@ -33,6 +33,27 @@ export default class StateStats extends React.Component {
     });
   }
 
+  componentDidMount() {
+    // Send an HTTP request to the server.
+    fetch("http://localhost:8081/genres", {
+      method: 'GET' // The type of HTTP request.
+    })
+      .then(res => res.json()) // Convert the response data to a JSON.
+      .then(genreList => {
+        if (!genreList) return;
+        // Map each genreObj in genreList to an HTML element:
+        // A button which triggers the showMovies function for each genre.
+        let genreDivs = genreList.map((genreObj, i) =>
+          <GenreButton id={"button-" + genreObj.genre} onClick={() => this.showMovies(genreObj.genre)} genre={genreObj.genre} />
+        );
+
+        // Set the state of the genres list to the value returned by the HTTP response from the server.
+        this.setState({
+          genres: genreDivs
+        })
+      })
+      .catch(err => console.log(err))	// Print the error if there is one.
+  }
 
   render() {
     return (
@@ -52,16 +73,28 @@ export default class StateStats extends React.Component {
             >
               <div className={Classes.DIALOG_BODY}>
                 <p>
-                  Number of Nursing Homes...
+                  Overall Rating: 
                 </p>
                 <p>
-                  Average Number of Beds...
+                  Occupancy Rate:
                 </p>
                 <p>
-                  Average Occupancy..
+                  Resident Case Rate:
                 </p>
                 <p>
-                  Average Rating...
+                  COVID Mortality Rate:
+                </p>
+                <p>
+                  COVID Reporting Rate:
+                </p>
+                <p>
+                  COVID Testing Rate:
+                </p>
+                <p>
+                  Staffing Rate:
+                </p>
+                <p>
+                  Percentage of Homes with COVID Cases:
                 </p>
               </div>
               <div className={Classes.DIALOG_FOOTER}>
