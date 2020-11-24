@@ -6,6 +6,7 @@ import {
 } from "@blueprintjs/core";
 import '../style/NursingHomeProfile.css';
 import NursingHomeRow from './NursingHomeRow';
+import SimilarsRow from './SimilarsRow';
 
 export default class NursingHomeProfile extends React.Component {
 
@@ -193,8 +194,23 @@ export default class NursingHomeProfile extends React.Component {
           StateRank: queryObj.StateRank,
           OverallRank: queryObj.OverallRank
         })
+        fetch(`http://localhost:8081/similar/${this.props.location.state.id}/${this.props.location.state.latitude}/${this.props.location.state.longitude}/${this.props.location.state.state}/${this.state.StateRank}`, {
+          method: 'GET'
+        })
+        .then(res => res.json()) 
+        .then(queries => {
+          if (!queries) return;
+          console.log(queries);
+          let queryDivs = queries.map((genreObj, i) =>    
+            <SimilarsRow FPN={genreObj.FPN} StateRank={genreObj.StateRank} Name={genreObj.Name}/> 
+          );
+          this.setState({
+            simFPNs: queryDivs
+          })
+        })
+        .catch(err => console.log(err));
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err));    
   }
 
   render() {
@@ -269,10 +285,10 @@ export default class NursingHomeProfile extends React.Component {
           </div>
           <div className='bottom-row'>
             <Card className='additional-card'>
-              <h2>Here are some similar nursing homes</h2>
-              <p>Nursing home 1</p>
-              <p>Nursing home 1</p>
-              <p>Nursing home 1</p>
+              <h2>Here are some similar nursing homes: </h2>
+              <div className="results-container" id="results">
+			    			{this.state.simFPNs}
+			    		</div>
             </Card>
           </div>
         </div>
