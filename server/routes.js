@@ -103,50 +103,50 @@ function filteredSearch(req, res) {
 function stateStats(req, res) {
   var state= req.params.state;
   var query = `
-  WITH Occupancy(FPN, state, occupied, total, rate) AS 
-  (SELECT P.FPN, L.State, P.TotalNumberofOccupiedBeds, P.CertifiedBeds, P.TotalNumberofOccupiedBeds/P.CertifiedBeds
-  FROM Locations L JOIN Providers P ON L.FPN = P.FPN),
+    WITH Occupancy(FPN, state, occupied, total, rate) AS 
+    (SELECT P.FPN, L.State, P.TotalNumberofOccupiedBeds, P.CertifiedBeds, P.TotalNumberofOccupiedBeds/P.CertifiedBeds
+    FROM Locations L JOIN Providers P ON L.FPN = P.FPN),
 
-  ResidentCases(FPN, state, rate) AS
-  (SELECT P.FPN, L.State, CD.ResidentsTotalConfirmed/P.TotalNumberofOccupiedBeds AS rate 
-  FROM COVIDData CD JOIN Providers P ON CD.FPN = P.FPN JOIN Locations L ON P.FPN = L.FPN),
+    ResidentCases(FPN, state, rate) AS
+    (SELECT P.FPN, L.State, CD.ResidentsTotalConfirmed/P.TotalNumberofOccupiedBeds AS rate 
+    FROM COVIDData CD JOIN Providers P ON CD.FPN = P.FPN JOIN Locations L ON P.FPN = L.FPN),
 
-  HomesWithCOVID(state, count) AS
-  (SELECT L.State, COUNT(P.FPN)
-  FROM Providers P JOIN Locations L ON P.FPN = L.FPN JOIN COVIDData CD ON L.FPN = CD.FPN
-  WHERE CD.ResidentsWeeklyConfirmed > 0 OR CD.ResidentsWeeklySuspected > 0 OR CD.StaffWeeklyConfirmed > 0 OR CD.StaffWeeklySuspected > 0 
-  GROUP BY L.State),
+    HomesWithCOVID(state, count) AS
+    (SELECT L.State, COUNT(P.FPN)
+    FROM Providers P JOIN Locations L ON P.FPN = L.FPN JOIN COVIDData CD ON L.FPN = CD.FPN
+    WHERE CD.ResidentsWeeklyConfirmed > 0 OR CD.ResidentsWeeklySuspected > 0 OR CD.StaffWeeklyConfirmed > 0 OR CD.StaffWeeklySuspected > 0 
+    GROUP BY L.State),
 
-  COVIDDeathRate(FPN, state, rate) AS
-  (SELECT P.FPN, L.State, CD.ResidentsTotalCovidDeaths/P.TotalNumberofOccupiedBeds
-  FROM Providers P JOIN COVIDData CD ON P.FPN = CD.FPN JOIN Locations L ON CD.FPN = L.FPN),
+    COVIDDeathRate(FPN, state, rate) AS
+    (SELECT P.FPN, L.State, CD.ResidentsTotalCovidDeaths/P.TotalNumberofOccupiedBeds
+    FROM Providers P JOIN COVIDData CD ON P.FPN = CD.FPN JOIN Locations L ON CD.FPN = L.FPN),
 
-  ReportingProviders(state, count) AS
-  (SELECT L.State, COUNT(P.FPN)
-  FROM Providers P JOIN COVIDData CD ON P.FPN = CD.FPN JOIN Locations L ON CD.FPN = L.FPN
-  WHERE CD.SubmittedData = "Y"
-  GROUP BY L.State),
+    ReportingProviders(state, count) AS
+    (SELECT L.State, COUNT(P.FPN)
+    FROM Providers P JOIN COVIDData CD ON P.FPN = CD.FPN JOIN Locations L ON CD.FPN = L.FPN
+    WHERE CD.SubmittedData = "Y"
+    GROUP BY L.State),
 
-  StaffingHours(FPN, state, rate) AS
-  (SELECT P.FPN, L.State, C.LicensedStaffing_ReportedHoursPerResidentPerDay+C.TotalNurse_ReportedHoursPerResidentPerDay+C.PT_ReportedHoursPerResidentPerDay
-  FROM Providers P JOIN CMSData C ON P.FPN = C.FPN JOIN Locations L ON C.FPN = L.FPN),
+    StaffingHours(FPN, state, rate) AS
+    (SELECT P.FPN, L.State, C.LicensedStaffing_ReportedHoursPerResidentPerDay+C.TotalNurse_ReportedHoursPerResidentPerDay+C.PT_ReportedHoursPerResidentPerDay
+    FROM Providers P JOIN CMSData C ON P.FPN = C.FPN JOIN Locations L ON C.FPN = L.FPN),
 
-  COVIDTesting(state, count) AS
-  (SELECT L.State, COUNT(P.FPN)
-  FROM Providers P JOIN COVIDData CD ON P.FPN = CD.FPN JOIN Locations L ON CD.FPN = L.FPN
-  WHERE CD.ResidentsAbleToTestAllWithinWeek = "Y"
-  GROUP BY L.State),
+    COVIDTesting(state, count) AS
+    (SELECT L.State, COUNT(P.FPN)
+    FROM Providers P JOIN COVIDData CD ON P.FPN = CD.FPN JOIN Locations L ON CD.FPN = L.FPN
+    WHERE CD.ResidentsAbleToTestAllWithinWeek = "Y"
+    GROUP BY L.State),
 
-  AllProviders(state, count) AS
-  (SELECT L.State, COUNT(*)
-  FROM Providers P JOIN Locations L ON P.FPN = L.FPN
-  GROUP BY L.State)
+    AllProviders(state, count) AS
+    (SELECT L.State, COUNT(*)
+    FROM Providers P JOIN Locations L ON P.FPN = L.FPN
+    GROUP BY L.State)
 
-  SELECT L.State, ROUND(AVG(C.OverallRating), 2) AS OverallRating, ROUND(AVG(O.rate), 2) AS OccupancyRate, ROUND(AVG(R.rate), 2) AS ResidentCaseRate, ROUND(AVG(CDR.rate), 2) AS COVIDDeathRate, ROUND(COUNT(RP.count)/AP.count*100 , 2)AS ReportingRate, ROUND(AVG(SH.rate), 2) AS StaffingRate, ROUND(CT.count/AP.count*100, 2) AS COVIDTestingRate, ROUND(HWC.count/AP.count*100, 2) AS HomesWithCOVID
+    SELECT L.State, ROUND(AVG(C.OverallRating), 2) AS OverallRating, ROUND(AVG(O.rate), 2) AS OccupancyRate, ROUND(AVG(R.rate), 2) AS ResidentCaseRate, ROUND(AVG(CDR.rate), 2) AS COVIDDeathRate, ROUND(COUNT(RP.count)/AP.count*100 , 2)AS ReportingRate, ROUND(AVG(SH.rate), 2) AS StaffingRate, ROUND(CT.count/AP.count*100, 2) AS COVIDTestingRate, ROUND(HWC.count/AP.count*100, 2) AS HomesWithCOVID
 
-  FROM Providers P JOIN CMSData C ON P.FPN = C.FPN JOIN Occupancy O ON C.FPN = O.FPN JOIN Locations L ON O.FPN = L.FPN JOIN COVIDTesting CT ON L.State = CT.state JOIN HomesWithCOVID HWC ON L.State = HWC.state JOIN AllProviders AP ON L.State = AP.state JOIN ReportingProviders RP ON L.State = RP.state JOIN ResidentCases R ON L.FPN = R.FPN JOIN COVIDDeathRate CDR ON R.FPN = CDR.FPN JOIN StaffingHours SH ON CDR.FPN = SH.FPN 
-  GROUP BY L.State
-  HAVING L.State = '${state}';
+    FROM Providers P JOIN CMSData C ON P.FPN = C.FPN JOIN Occupancy O ON C.FPN = O.FPN JOIN Locations L ON O.FPN = L.FPN JOIN COVIDTesting CT ON L.State = CT.state JOIN HomesWithCOVID HWC ON L.State = HWC.state JOIN AllProviders AP ON L.State = AP.state JOIN ReportingProviders RP ON L.State = RP.state JOIN ResidentCases R ON L.FPN = R.FPN JOIN COVIDDeathRate CDR ON R.FPN = CDR.FPN JOIN StaffingHours SH ON CDR.FPN = SH.FPN 
+    GROUP BY L.State
+    HAVING L.State = '${state}';
   `;
   connection.query(query, function (err, rows, fields) {
     if (err) console.log(err);

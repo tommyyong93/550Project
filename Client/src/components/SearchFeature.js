@@ -10,7 +10,7 @@ import {
   InputGroup,
   HTMLSelect,
   Label,
-  Slider,
+  Slider, 
   NumericInput,
   Card,
   Navbar,

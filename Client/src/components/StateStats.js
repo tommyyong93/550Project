@@ -33,7 +33,7 @@ export default class StateStats extends React.Component {
     });
   }
 
-
+ 
   render() {
     return (
       <div className="StateStats">
@@ -52,7 +52,7 @@ export default class StateStats extends React.Component {
             >
               <div className={Classes.DIALOG_BODY}>
                 <p>
-                  Number of Nursing Homes...
+                  Number of Nursing Homes... 
                 </p>
                 <p>
                   Average Number of Beds...
