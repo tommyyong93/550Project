@@ -396,11 +396,11 @@ export default class SearchFeature extends React.Component {
               </Label>
               <Label>
                 Total Covid Admissions:
-                <Slider min={0} max={400} stepSize={1} labelStepSize={100} value={this.state.covidAdmission} onChange={this.getChangeHandler("covidAdmission")}/>
+                <Slider min={0} max={400} stepSize={1} labelStepSize={50} value={this.state.covidAdmission} onChange={this.getChangeHandler("covidAdmission")}/>
               </Label>
               <Label>
                 Total Confirmed Covid Cases:
-                <Slider min={0} max={45000} stepSize={1} labelStepSize={10000} value={this.state.confirmedCases} onChange={this.getChangeHandler("confirmedCases")}/>
+                <Slider min={0} max={400} stepSize={1} labelStepSize={50} value={this.state.confirmedCases} onChange={this.getChangeHandler("confirmedCases")}/>
               </Label>
               <Label>
                 Number of Free Beds:

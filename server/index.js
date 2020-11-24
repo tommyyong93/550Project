@@ -55,7 +55,11 @@ app.get('/stateAvg/:state', routes.stateAvg)
 // if this FPN has a red flag, returns the type of red flag. If no red flag, returns empty array
 app.get('/redflag/:FPN', routes.getRedFlagType);
 
+/* ---- Nearest Nursing Home that reported Data (complex query )---- */
+app.get('/nearestReported/:FPN', routes.getNearestReportData);
 
+/* ---- Nearest Nursing Home that passed QA (complex query )---- */
+app.get('/nearestQA/:FPN', routes.getNearestQACheck);
 
 app.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
