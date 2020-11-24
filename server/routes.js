@@ -173,13 +173,13 @@ function findSimilarHomes(req, res) {
       FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN
     WHERE l.State = '${vState}'),
   StateGrades AS (
-    SELECT FPN, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_StatePercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (CovidDeathsPer1000_StatePercentile)*(-0.55) + (VentilatorsInFacility_StatePercentile)*(0.05))*10) AS Grade
+    SELECT FPN, Name, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_StatePercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (CovidDeathsPer1000_StatePercentile)*(-0.55) + (VentilatorsInFacility_StatePercentile)*(0.05))*10) AS Grade
       FROM StatePercentiles),
   StateRanks AS (
-    SELECT FPN, DENSE_RANK() OVER(ORDER BY Grade DESC) AS StateRank
+    SELECT FPN, Name, DENSE_RANK() OVER(ORDER BY Grade DESC) AS StateRank
       FROM StateGrades
     ORDER BY StateRank)
-  SELECT s.FPN, StateRank, (12742 * SIN(SQRT(0.5 - COS((l.Latitude - ${vLat}) * PI() / 180) / 2 + (COS(l.Latitude * PI() / 180) * COS(${vLat} * PI() / 180) * (1-COS((l.Longitude - ${vLong})* PI()/180))/2)))) as Distance
+  SELECT s.FPN, s.Name, StateRank, (12742 * SIN(SQRT(0.5 - COS((l.Latitude - ${vLat}) * PI() / 180) / 2 + (COS(l.Latitude * PI() / 180) * COS(${vLat} * PI() / 180) * (1-COS((l.Longitude - ${vLong})* PI()/180))/2)))) as Distance
   FROM Locations l JOIN StateRanks s ON l.FPN=s.FPN
   WHERE (StateRank<(${rank}+10) and StateRank>(${rank}-10)) and s.FPN != '${vFPN}'
   ORDER BY Distance, StateRank
@@ -546,6 +546,23 @@ function getNearestQACheck(req, res) {
   })
 }
 
+/* ---- Get all FPNs (used for random nursing home)---- */
+function getFPNs(req, res) {
+  var query = `
+  SELECT P.ProviderName, P.FPN, L.State, L.Longitude, L.Latitude
+  FROM Providers P JOIN Locations L on P.FPN = L.FPN;
+  `
+  console.log(query)
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(rows);
+      console.log(rows);
+    }
+  })
+}
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   searchBar: searchBar,
@@ -563,5 +580,6 @@ module.exports = {
   stateAvg: stateAvg,
   stateStats: stateStats,
   getNearestReportData: getNearestReportData,
-  getNearestQACheck: getNearestQACheck
+  getNearestQACheck: getNearestQACheck,
+  getFPNs: getFPNs
 }

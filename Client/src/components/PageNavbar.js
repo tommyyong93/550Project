@@ -5,16 +5,36 @@ import {
   Alignment
 } from "@blueprintjs/core";
 import '../style/PageNavbar.css';
+import {
+  Link
+} from 'react-router-dom'
 
 export default class PageNavbar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-
+      FPN: [],
+      randomFPN: "01A193"
     }
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    fetch(`http://localhost:8081/FPN`, {
+      method: "GET"
+    }).then(res => res.json()).then(FPN => {
+      if (!FPN) return;
+      var length = FPN.length
+      var randomFPN = Math.floor(Math.random() * length)
+      this.setState({
+        FPN: FPN,
+        randomFPN: FPN[randomFPN].FPN,
+        randomName: FPN[randomFPN].ProviderName,
+        randomState: FPN[randomFPN].State,
+        randomLat: FPN[randomFPN].Latitude,
+        randomLong: FPN[randomFPN].Longitude
+      })
+    })
+  }
 
   render() {
     return (
@@ -29,7 +49,16 @@ export default class PageNavbar extends React.Component {
           <Navbar.Heading>&nbsp; Nurse Next Door</Navbar.Heading>
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
-          <a href={"/profile/123"}><Button className={this.props.active === 'profile' ? "highlighted bp3-minimal" : "bp3-minimal"} text={this.props.selected ?  this.props.selected : "Random Profile"}/></a>
+          <Link className={this.props.active === 'profile' ? "randomProfile-title highlighted" : "randomProfile-title"} to={{
+            pathname: `/profile/${this.state.randomFPN}`,
+            state: {
+              name: this.state.randomName,
+              state: this.state.randomState,
+              id: this.state.randomFPN,
+              latitude:this.state.randomLat,
+              longitude: this.state.randomLong
+            }
+          }}>{this.props.selected ?  this.props.selected : "Random Profile"}</Link>
           <a href={"/search"}><Button className={this.props.active === 'search' ? "highlighted bp3-minimal" : "bp3-minimal"} text="Search for a Nursing Home"/></a>
           <a href={"/state"}><Button className={this.props.active === 'state' ? "highlighted bp3-minimal" : "bp3-minimal"} text="Statistics by State"/></a>
         </Navbar.Group>
