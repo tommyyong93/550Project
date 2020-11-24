@@ -195,22 +195,22 @@ export default class NursingHomeProfile extends React.Component {
           OverallRank: queryObj.OverallRank
         })
         fetch(`http://localhost:8081/similar/${this.props.location.state.id}/${this.props.location.state.latitude}/${this.props.location.state.longitude}/${this.props.location.state.state}/${this.state.StateRank}`, {
-          method: 'GET'
-        })
-        .then(res => res.json()) 
-        .then(queries => {
-          if (!queries) return;
-          console.log(queries);
-          let queryDivs = queries.map((genreObj, i) =>    
-            <SimilarsRow FPN={genreObj.FPN} StateRank={genreObj.StateRank} Name={genreObj.Name}/> 
-          );
-          this.setState({
-            simFPNs: queryDivs
+            method: 'GET'
           })
-        })
-        .catch(err => console.log(err));
+          .then(res => res.json())
+          .then(queries => {
+            if (!queries) return;
+            console.log(queries);
+            let queryDivs = queries.map((genreObj, i) =>
+              <SimilarsRow FPN={genreObj.FPN} StateRank={genreObj.StateRank} Name={genreObj.Name}/>
+            );
+            this.setState({
+              simFPNs: queryDivs
+            })
+          })
+          .catch(err => console.log(err));
       })
-      .catch(err => console.log(err));    
+      .catch(err => console.log(err));
   }
 
   render() {
