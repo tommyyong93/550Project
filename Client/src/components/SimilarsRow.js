@@ -6,15 +6,15 @@ import {
 
 export default class SimilarsRow extends React.Component {
 
-    constructor(props) {
-		super(props);
-	}
+  constructor(props) {
+    super(props);
+  }
 
-	render() {
-		return (
-			<div className="similarFPNs">
+  render() {
+    return (
+      <div className="similarFPNs">
 				<div className="FPNinfo">{this.props.Name}: {this.props.FPN}, StateRank: {this.props.StateRank} </div>
 			</div>
-		);
-	}
+    );
+  }
 }

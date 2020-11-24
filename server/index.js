@@ -61,6 +61,9 @@ app.get('/nearestReported/:FPN', routes.getNearestReportData);
 /* ---- Nearest Nursing Home that passed QA (complex query )---- */
 app.get('/nearestQA/:FPN', routes.getNearestQACheck);
 
+/* ---- Get all FPNs (used for random nursing home)---- */
+app.get('/FPN/', routes.getFPNs);
+
 app.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 }); 

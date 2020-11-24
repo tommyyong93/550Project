@@ -546,6 +546,23 @@ function getNearestQACheck(req, res) {
   })
 }
 
+/* ---- Get all FPNs (used for random nursing home)---- */
+function getFPNs(req, res) {
+  var query = `
+  SELECT P.ProviderName, P.FPN, L.State, L.Longitude, L.Latitude
+  FROM Providers P JOIN Locations L on P.FPN = L.FPN;
+  `
+  console.log(query)
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(rows);
+      console.log(rows);
+    }
+  })
+}
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   searchBar: searchBar,
@@ -563,5 +580,6 @@ module.exports = {
   stateAvg: stateAvg,
   stateStats: stateStats,
   getNearestReportData: getNearestReportData,
-  getNearestQACheck: getNearestQACheck
+  getNearestQACheck: getNearestQACheck,
+  getFPNs: getFPNs
 }

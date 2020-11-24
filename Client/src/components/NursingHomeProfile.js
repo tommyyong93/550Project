@@ -15,7 +15,7 @@ export default class NursingHomeProfile extends React.Component {
     this.state = {
       fpn: "",
       ProviderName: "",
-      Address: "", 
+      Address: "",
       City: "",
       state: "",
       Zip: "",
@@ -66,7 +66,7 @@ export default class NursingHomeProfile extends React.Component {
     }
   }
 
-  componentDidMount() {   
+  componentDidMount() {
     if (this.props.location) {
       if (this.props.location.state) {
         if (this.props.location.state.name) {
@@ -97,15 +97,15 @@ export default class NursingHomeProfile extends React.Component {
       }
     }
 
-    // get all individual nursing home info from FPN selected 
+    // get all individual nursing home info from FPN selected
     fetch(`http://localhost:8081/profile/${this.props.location.state.id}`, {
-      method: 'GET'
-    })
-      .then(res => res.json()) 
+        method: 'GET'
+      })
+      .then(res => res.json())
       .then(queries => {
         if (!queries) return;
         console.log(queries);
-        let queryObj = queries[0];    
+        let queryObj = queries[0];
         this.setState({
           ProviderName: queryObj.ProviderName,
           Address: queryObj.Address,
@@ -131,17 +131,17 @@ export default class NursingHomeProfile extends React.Component {
           NumVentilatorsInFacility: queryObj.NumVentilatorsInFacility
         })
       })
-      .catch(err => console.log(err));	
+      .catch(err => console.log(err));
 
 
     fetch(`http://localhost:8081/stateAvg/${this.props.location.state.state}`, {
-      method: 'GET'
-    })
-      .then(res => res.json()) 
+        method: 'GET'
+      })
+      .then(res => res.json())
       .then(queries => {
         if (!queries) return;
         console.log(queries);
-        let queryObj = queries[0];    
+        let queryObj = queries[0];
         this.setState({
           StateAvgOverallRating: queryObj.StateAvgOverallRating,
           StateAvgHealthInspRating: queryObj.StateAvgHealthInspRating,
@@ -156,16 +156,16 @@ export default class NursingHomeProfile extends React.Component {
           StateAvgVentilatorsInFacility: queryObj.StateAvgVentilatorsInFacility
         })
       })
-      .catch(err => console.log(err));	
+      .catch(err => console.log(err));
 
     fetch(`http://localhost:8081/overallAvg`, {
-      method: 'GET'
-    })
-      .then(res => res.json()) 
+        method: 'GET'
+      })
+      .then(res => res.json())
       .then(queries => {
         if (!queries) return;
         console.log(queries);
-        let queryObj = queries[0];    
+        let queryObj = queries[0];
         this.setState({
           OverallAvgOverallRating: queryObj.OverallAvgOverallRating,
           OverallAvgHealthInspRating: queryObj.OverallAvgHealthInspRating,
@@ -181,36 +181,36 @@ export default class NursingHomeProfile extends React.Component {
         })
       })
       .catch(err => console.log(err));
-      
+
     fetch(`http://localhost:8081/rank/${this.props.location.state.id}/${this.props.location.state.state}`, {
-      method: 'GET'
-    })
-      .then(res => res.json()) 
+        method: 'GET'
+      })
+      .then(res => res.json())
       .then(queries => {
         if (!queries) return;
         console.log(queries);
-        let queryObj = queries[0];    
+        let queryObj = queries[0];
         this.setState({
           StateRank: queryObj.StateRank,
           OverallRank: queryObj.OverallRank
         })
         fetch(`http://localhost:8081/similar/${this.props.location.state.id}/${this.props.location.state.latitude}/${this.props.location.state.longitude}/${this.props.location.state.state}/${this.state.StateRank}`, {
-          method: 'GET'
-        })
-        .then(res => res.json()) 
-        .then(queries => {
-          if (!queries) return;
-          console.log(queries);
-          let queryDivs = queries.map((genreObj, i) =>    
-            <SimilarsRow FPN={genreObj.FPN} StateRank={genreObj.StateRank} Name={genreObj.Name}/> 
-          );
-          this.setState({
-            simFPNs: queryDivs
+            method: 'GET'
           })
-        })
-        .catch(err => console.log(err));
+          .then(res => res.json())
+          .then(queries => {
+            if (!queries) return;
+            console.log(queries);
+            let queryDivs = queries.map((genreObj, i) =>
+              <SimilarsRow FPN={genreObj.FPN} StateRank={genreObj.StateRank} Name={genreObj.Name}/>
+            );
+            this.setState({
+              simFPNs: queryDivs
+            })
+          })
+          .catch(err => console.log(err));
       })
-      .catch(err => console.log(err));    
+      .catch(err => console.log(err));
   }
 
   render() {
