@@ -27,10 +27,10 @@ export default class FrontPage extends React.Component {
     })
   }
 
-  onFormSubmit = (event) => {
+  onFormSubmit = async (event) => {
     event.preventDefault();
     if (this.state.query === "") return
-    fetch(`http://localhost:8081/search/${this.state.query}`, {
+    await fetch(`http://localhost:8081/search/${this.state.query}`, {
         method: 'GET'
       })
       .then(res => res.json())
@@ -83,7 +83,7 @@ export default class FrontPage extends React.Component {
         </div>
         <div className="search-container">
           <form className='form' onSubmit={this.onFormSubmit}>
-            <InputGroup placeholder="Enter a city, state or ZIP code" leftIcon="search" value={this.state.query} onChange={this.onInputChange}
+            <InputGroup placeholder="Enter a city, state (as abbreviation) or ZIP code" leftIcon="search" value={this.state.query} onChange={this.onInputChange}
               onSubmit={this.onFormSubmit}></InputGroup>
             {this.state.redirect ?
               <Redirect to={{

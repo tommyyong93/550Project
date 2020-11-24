@@ -2,6 +2,15 @@
   border-bottom: solid #A9A9A9 2px;
 }
 
+.randomProfile-title{
+  color: black;
+}
+
+.randomProfile-title:hover{
+  text-decoration: underline !important;
+  text-decoration-color: #106ba3 !important;
+}
+
 .highlighted{
   color : blue !important;
 }
