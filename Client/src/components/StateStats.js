@@ -52,16 +52,28 @@ export default class StateStats extends React.Component {
             >
               <div className={Classes.DIALOG_BODY}>
                 <p>
-                  Number of Nursing Homes... 
+                  Overall Rating: 
                 </p>
                 <p>
-                  Average Number of Beds...
+                  Occupancy Rate:
                 </p>
                 <p>
-                  Average Occupancy..
+                  Resident Case Rate:
                 </p>
                 <p>
-                  Average Rating...
+                  COVID Mortality Rate:
+                </p>
+                <p>
+                  COVID Reporting Rate:
+                </p>
+                <p>
+                  COVID Testing Rate:
+                </p>
+                <p>
+                  Staffing Rate:
+                </p>
+                <p>
+                  Percentage of Homes With COVID Cases:
                 </p>
               </div>
               <div className={Classes.DIALOG_FOOTER}>
