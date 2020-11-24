@@ -49,7 +49,7 @@ export default class PageNavbar extends React.Component {
           <Navbar.Heading>&nbsp; Nurse Next Door</Navbar.Heading>
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
-          <Link className={this.props.active === 'profile' ? "randomProfile-title highlighted" : "randomProfile-title"} to={{
+          <Link className={this.props.active === 'profile' ? "randomProfile-title highlighted bp3-button-text bp3-button bp3-minimal" : "randomProfile-title bp3-button-text bp3-button bp3-minimal"} to={{
             pathname: `/profile/${this.state.randomFPN}`,
             state: {
               name: this.state.randomName,

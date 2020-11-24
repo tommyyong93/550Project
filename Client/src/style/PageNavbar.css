@@ -6,6 +6,11 @@
   color: black;
 }
 
+.randomProfile-title:hover{
+  text-decoration: underline !important;
+  text-decoration-color: #106ba3 !important;
+}
+
 .highlighted{
   color : blue !important;
 }
