@@ -2,7 +2,7 @@ import React from 'react';
 import PageNavbar from './PageNavbar'
 import ProfileMap from './ProfileMap'
 import {
-  Card,
+  Card, 
 } from "@blueprintjs/core";
 import '../style/NursingHomeProfile.css';
 import NursingHomeRow from './NursingHomeRow';

@@ -17,7 +17,12 @@ export default class StateStats extends React.Component {
       selectedState: "",
       showPopup: false
     };
+    fetch(`http://localhost:8081/stateStats/${this.props.state.selectedState}`, {
+      method: 'GET'
+    })
   }
+
+
 
   mapHandler = (event) => {
     var state = event.target.dataset.name;
@@ -25,6 +30,9 @@ export default class StateStats extends React.Component {
       selectedState: state,
       showPopup: true
     })
+
+    /* Add fetch statement here*/
+    
   };
 
   handleClose = () => {
