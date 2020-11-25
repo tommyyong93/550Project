@@ -15,7 +15,15 @@ export default class StateStats extends React.Component {
 
     this.state = {
       selectedState: "",
-      showPopup: false
+      showPopup: false,
+      OverallRating: "",
+      OccupancyRate: "",
+      ResidentCaseRate: "",
+      COVIDmortalityRate: "",
+      COVIDreportingRate: "",
+      COVIDtestingRate: "",
+      StaffingRate: "",
+      PercentageOfHomesWithCOVID: ""
     };
   }
 
@@ -25,34 +33,33 @@ export default class StateStats extends React.Component {
       selectedState: state,
       showPopup: true
     })
+    fetch(`http://localhost:8081/stateStats/${this.props.state.selectedState}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries);
+        let queryObj = queries[0];
+        this.setState({
+          OverallRating: queryObj.OverallRating,
+          OccupancyRate: queryObj.OccupancyRate,
+          ResidentCaseRate: queryObj.ResidentCaseRate,
+          COVIDmortalityRate: queryObj.COVIDDeathRate,
+          COVIDreportingRate: queryObj.ReportingRate,
+          COVIDtestingRate: queryObj.COVIDTestingRate,
+          StaffingRate: queryObj.StaffingRate,
+          PercentageOfHomesWithCOVID: queryObj.HomesWithCOVID
+        })
+      })
+      .catch(err => console.log(err));
+
   };
 
   handleClose = () => {
     this.setState({
       showPopup: false
     });
-  }
-
-  componentDidMount() {
-    // Send an HTTP request to the server.
-    fetch("http://localhost:8081/genres", {
-      method: 'GET' // The type of HTTP request.
-    })
-      .then(res => res.json()) // Convert the response data to a JSON.
-      .then(genreList => {
-        if (!genreList) return;
-        // Map each genreObj in genreList to an HTML element:
-        // A button which triggers the showMovies function for each genre.
-        let genreDivs = genreList.map((genreObj, i) =>
-          <GenreButton id={"button-" + genreObj.genre} onClick={() => this.showMovies(genreObj.genre)} genre={genreObj.genre} />
-        );
-
-        // Set the state of the genres list to the value returned by the HTTP response from the server.
-        this.setState({
-          genres: genreDivs
-        })
-      })
-      .catch(err => console.log(err))	// Print the error if there is one.
   }
 
   render() {
@@ -90,34 +97,34 @@ export default class StateStats extends React.Component {
                 onClick={this.mapHandler} defaultFill="#DCDCDC"/>
             </div>
             <Dialog
-              onClose={this.handleClose}
+              onClose={this.handleClose} 
               title= {`You selected ${this.state.selectedState}`}
               isOpen={this.state.showPopup}
             >
               <div className={Classes.DIALOG_BODY}>
                 <p>
-                  Overall Rating: 
+                  Overall Rating: {this.state.OverallRating}
                 </p>
                 <p>
-                  Occupancy Rate:
+                  Occupancy Rate: {this.state.OccupancyRate}
                 </p>
                 <p>
-                  Resident Case Rate:
+                  Resident Case Rate: {this.state.ResidentCaseRate}
                 </p>
                 <p>
-                  COVID Mortality Rate:
+                  COVID Mortality Rate: {this.state.COVIDmortalityRate}
                 </p>
                 <p>
-                  COVID Reporting Rate:
+                  COVID Reporting Rate: {this.state.COVIDreportingRate}
                 </p>
                 <p>
-                  COVID Testing Rate:
+                  COVID Testing Rate: {this.state.COVIDtestingRate}
                 </p>
                 <p>
-                  Staffing Rate:
+                  Staffing Rate: {this.state.StaffingRate}
                 </p>
                 <p>
-                  Percentage of Homes with COVID Cases:
+                  Percentage of Homes with COVID Cases: {this.state.PercentageOfHomesWithCOVID}
                 </p>
               </div>
               <div className={Classes.DIALOG_FOOTER}>
