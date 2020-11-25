@@ -15,7 +15,15 @@ export default class StateStats extends React.Component {
 
     this.state = {
       selectedState: "",
-      showPopup: false
+      showPopup: false,
+      OverallRating: "",
+      OccupancyRate: "",
+      ResidentCaseRate: "",
+      COVIDmortalityRate: "",
+      COVIDreportingRate: "",
+      COVIDtestingRate: "",
+      StaffingRate: "",
+      PercentageOfHomesWithCOVID: ""
     };
     fetch(`http://localhost:8081/stateStats/${this.props.state.selectedState}`, {
       method: 'GET'
@@ -30,9 +38,27 @@ export default class StateStats extends React.Component {
       selectedState: state,
       showPopup: true
     })
+    fetch(`http://localhost:8081/stateStats/${state}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries); 
+        let queryObj = queries[0];
+        this.setState({
+          OverallRating: queryObj.OverallRating,
+          OccupancyRate: queryObj.OccupancyRate,
+          ResidentCaseRate: queryObj.ResidentCaseRate,
+          COVIDmortalityRate: queryObj.COVIDDeathRate,
+          COVIDreportingRate: queryObj.ReportingRate,
+          COVIDtestingRate: queryObj.COVIDTestingRate,
+          StaffingRate: queryObj.StaffingRate,
+          PercentageOfHomesWithCOVID: queryObj.HomesWithCOVID
+        })
+      })
+      .catch(err => console.log(err));
 
-    /* Add fetch statement here*/
-    
   };
 
   handleClose = () => {
@@ -41,7 +67,6 @@ export default class StateStats extends React.Component {
     });
   }
 
- 
   render() {
     return (
       <div className="StateStats">
@@ -77,34 +102,34 @@ export default class StateStats extends React.Component {
                 onClick={this.mapHandler} defaultFill="#DCDCDC"/>
             </div>
             <Dialog
-              onClose={this.handleClose}
+              onClose={this.handleClose} 
               title= {`You selected ${this.state.selectedState}`}
               isOpen={this.state.showPopup}
             >
               <div className={Classes.DIALOG_BODY}>
                 <p>
-                  Overall Rating: 
+                  Overall Rating: {this.state.OverallRating}
                 </p>
                 <p>
-                  Occupancy Rate:
+                  Occupancy Rate: {this.state.OccupancyRate}
                 </p>
                 <p>
-                  Resident Case Rate:
+                  Resident Case Rate: {this.state.ResidentCaseRate}
                 </p>
                 <p>
-                  COVID Mortality Rate:
+                  COVID Mortality Rate: {this.state.COVIDmortalityRate}
                 </p>
                 <p>
-                  COVID Reporting Rate:
+                  COVID Reporting Rate: {this.state.COVIDreportingRate}
                 </p>
                 <p>
-                  COVID Testing Rate:
+                  COVID Testing Rate: {this.state.COVIDtestingRate}
                 </p>
                 <p>
-                  Staffing Rate:
+                  Staffing Rate: {this.state.StaffingRate}
                 </p>
                 <p>
-                  Percentage of Homes With COVID Cases:
+                  Percentage of Homes with COVID Cases: {this.state.PercentageOfHomesWithCOVID}
                 </p>
               </div>
               <div className={Classes.DIALOG_FOOTER}>
