@@ -22,6 +22,7 @@ const AnyReactComponent = ({
 
 export default class GoogleMap extends React.Component {
 
+
   render() {
     return (
       <div style={{ height: '100%', width: '100%' }}>
@@ -30,10 +31,11 @@ export default class GoogleMap extends React.Component {
           defaultCenter={{lat : this.props.latitude,lng:this.props.longitude}}
           defaultZoom={11}
         >
-          <AnyReactComponent
-            lat={this.props.latitude}
-            lng={this.props.longitude}
-          />
+          {this.props.latitude && this.props.longitude ?
+            <AnyReactComponent
+              lat={this.props.latitude}
+              lng={this.props.longitude}
+            /> : null}
         </GoogleMapReact>
       </div>
     );

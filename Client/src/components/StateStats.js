@@ -33,13 +33,13 @@ export default class StateStats extends React.Component {
       selectedState: state,
       showPopup: true
     })
-    fetch(`http://localhost:8081/stateStats/${this.props.state.selectedState}`, {
+    fetch(`http://localhost:8081/stateStats/${state}`, {
         method: 'GET'
       })
       .then(res => res.json())
       .then(queries => {
         if (!queries) return;
-        console.log(queries);
+        console.log(queries); 
         let queryObj = queries[0];
         this.setState({
           OverallRating: queryObj.OverallRating,
