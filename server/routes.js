@@ -142,7 +142,7 @@ function stateStats(req, res) {
   FROM Providers P JOIN Locations L ON P.FPN = L.FPN
   GROUP BY L.State)
 
-  SELECT L.State, ROUND(AVG(C.OverallRating), 2) AS OverallRating, ROUND(AVG(O.rate), 2) AS OccupancyRate, ROUND(AVG(R.rate), 2) AS ResidentCaseRate, ROUND(AVG(CDR.rate), 2) AS COVIDDeathRate, ROUND(COUNT(RP.count)/AP.count*100 , 2)AS ReportingRate, ROUND(AVG(SH.rate), 2) AS StaffingRate, ROUND(CT.count/AP.count*100, 2) AS COVIDTestingRate, ROUND(HWC.count/AP.count*100, 2) AS HomesWithCOVID
+  SELECT L.State, ROUND(AVG(C.OverallRating), 2) AS OverallRating, ROUND(AVG(O.rate), 2)*100 AS OccupancyRate, ROUND(AVG(R.rate), 2)*100 AS ResidentCaseRate, ROUND(AVG(CDR.rate), 2)*100 AS COVIDDeathRate, ROUND(COUNT(RP.count)/AP.count*100 , 2)AS ReportingRate, ROUND(AVG(SH.rate), 2) AS StaffingRate, ROUND(CT.count/AP.count*100, 2) AS COVIDTestingRate, ROUND(HWC.count/AP.count*100, 2) AS HomesWithCOVID
 
   FROM Providers P JOIN CMSData C ON P.FPN = C.FPN JOIN Occupancy O ON C.FPN = O.FPN JOIN Locations L ON O.FPN = L.FPN JOIN COVIDTesting CT ON L.State = CT.state JOIN HomesWithCOVID HWC ON L.State = HWC.state JOIN AllProviders AP ON L.State = AP.state JOIN ReportingProviders RP ON L.State = RP.state JOIN ResidentCases R ON L.FPN = R.FPN JOIN COVIDDeathRate CDR ON R.FPN = CDR.FPN JOIN StaffingHours SH ON CDR.FPN = SH.FPN
   GROUP BY L.State
@@ -631,6 +631,41 @@ function getTotalDeaths(req, res) {
   })
 }
 
+/* ---- Get top nursing homes in a state---- */
+function getTopNursingHomesInState(req, res) {
+  var State = req.params.State;
+  var query = `
+  WITH OverallPercentiles AS (
+    SELECT l.State AS State, p.FPN AS FPN, p.ProviderName AS Name, cms.OverallRating AS OverallRating, cms.HealthInspectionRating AS HealthInspRating, cms.StaffingRating AS StaffRating, cms.QMRating AS QMRating, ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS AverageHrsPerResPerDay, ROUND(PERCENT_RANK() OVER (ORDER BY ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3)),6) AS AverageHrsPerResPerDay_OverallPercentile, cms.NumReportedIncidents AS ReportedIncidents, cms.NumSubstantiatedComplaints AS Complaints, cov.ResidentsTotalCovidDeaths AS TotalCovidDeaths, ROUND(PERCENT_RANK() OVER (ORDER BY cov.ResidentsTotalCovidDeaths),6) AS TotalCovidDeaths_OverallPercentile,  cov.NumVentilatorsInFacility AS VentilatorsInFacility, ROUND(PERCENT_RANK() OVER (ORDER BY cov.NumVentilatorsInFacility),6) AS VentilatorsInFacility_OverallPercentile
+    FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN),
+  OverallRanks AS (
+    SELECT State, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_OverallPercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_OverallPercentile)*(-0.55) + (VentilatorsInFacility_OverallPercentile)*(0.05))*10) AS Grade, DENSE_RANK() OVER(ORDER BY (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_OverallPercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_OverallPercentile)*(-0.55) + (VentilatorsInFacility_OverallPercentile)*(0.05))*10) DESC) AS OverallRank
+    FROM OverallPercentiles
+    ORDER BY OverallRank),
+  StatePercentiles AS (
+    SELECT l.State AS State, p.FPN AS FPN, p.ProviderName AS Name, cms.OverallRating AS OverallRating, cms.HealthInspectionRating AS HealthInspRating, cms.StaffingRating AS StaffRating, cms.QMRating AS QMRating, ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS AverageHrsPerResPerDay, ROUND(PERCENT_RANK() OVER (ORDER BY ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3)),6) AS AverageHrsPerResPerDay_StatePercentile, cms.NumReportedIncidents AS ReportedIncidents, cms.NumSubstantiatedComplaints AS Complaints, cov.NumVentilatorsInFacility AS VentilatorsInFacility,  ROUND(PERCENT_RANK() OVER (ORDER BY cov.NumVentilatorsInFacility),6) AS VentilatorsInFacility_StatePercentile, cov.ResidentsTotalCovidDeaths AS TotalCovidDeaths, ROUND(PERCENT_RANK() OVER (ORDER BY cov.ResidentsTotalCovidDeaths),6) AS TotalCovidDeaths_StatePercentile
+  FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN
+    WHERE l.State = '${State}'),
+  StateGrades AS (
+    SELECT State, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_StatePercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_StatePercentile)*(-0.55) + (VentilatorsInFacility_StatePercentile)*(0.05))*10) AS Grade
+  FROM StatePercentiles),
+  StateRanks AS (
+    SELECT State, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, DENSE_RANK() OVER(ORDER BY Grade DESC) AS StateRank
+  FROM StateGrades
+    ORDER BY StateRank)
+  SELECT l.State AS State, l.Latitude as Latitude, l.Longitude as Longitude, sr.StateRank, o.OverallRank, p.FPN AS FPN, p.ProviderName AS Name, cms.OverallRating AS OverallRating, cms.HealthInspectionRating AS HealthInspRating, cms.StaffingRating AS StaffRating, cms.QMRating AS QMRating, ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS AverageHrsPerResPerDay, cms.NumReportedIncidents AS ReportedIncidents, cms.NumSubstantiatedComplaints AS Complaints, cov.ResidentsTotalCovidDeaths AS TotalCovidDeaths, cov.NumVentilatorsInFacility AS VentilatorsInFacility
+  FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON p.FPN = cov.FPN JOIN StateRanks sr ON p.FPN = sr.FPN JOIN OverallRanks o ON p.FPN = o.FPN
+  LIMIT 25;
+`;
+  connection.query(query, function (err, rows, fields) {
+    if (err) console.log(err);
+    else {
+      res.json(rows);
+    }
+  });
+};
+
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   searchBar: searchBar,
@@ -653,5 +688,6 @@ module.exports = {
   getTotalNursingHomes: getTotalNursingHomes,
   getTotalFines: getTotalFines,
   getTotalCovidAdmission: getTotalCovidAdmission,
-  getTotalDeaths: getTotalDeaths
+  getTotalDeaths: getTotalDeaths,
+  getTopNursingHomesInState: getTopNursingHomesInState
 }
