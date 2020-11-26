@@ -70,6 +70,8 @@ app.get('/totalFines', routes.getTotalFines);
 app.get('/totalCovidAdmission', routes.getTotalCovidAdmission);
 app.get('/totalCovidDeaths', routes.getTotalDeaths);
 
+app.get('/topNursingHomesInState/:State', routes.getTopNursingHomesInState);
+
 app.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 });
