@@ -62,8 +62,14 @@ app.get('/nearestReported/:FPN', routes.getNearestReportData);
 app.get('/nearestQA/:FPN', routes.getNearestQACheck);
 
 /* ---- Get all FPNs (used for random nursing home)---- */
-app.get('/FPN/', routes.getFPNs);
+app.get('/FPN', routes.getFPNs);
+
+/* ---- Routes for the country level stats on the state stats page ---- */
+app.get('/totalNursingHomes', routes.getTotalNursingHomes);
+app.get('/totalFines', routes.getTotalFines);
+app.get('/totalCovidAdmission', routes.getTotalCovidAdmission);
+app.get('/totalCovidDeaths', routes.getTotalDeaths);
 
 app.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
-}); 
+});
