@@ -563,6 +563,74 @@ function getFPNs(req, res) {
   })
 }
 
+/* ---- Get total nursing homes ---- */
+function getTotalNursingHomes(req, res) {
+  query = `
+    SELECT COUNT(*) as total
+    FROM Providers;
+  `
+  console.log(query)
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(rows);
+      console.log(rows);
+    }
+  })
+}
+
+/* ---- Get total number of fines ---- */
+function getTotalFines(req, res) {
+  query = `
+  SELECT SUM(AmountFines) as fines
+  FROM CMSData;
+  `
+  console.log(query)
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(rows);
+      console.log(rows);
+    }
+  })
+}
+
+/* ---- Get total covid admission ---- */
+function getTotalCovidAdmission(req, res) {
+  query = `
+  SELECT SUM(ResidentsTotalConfirmed) as totalAdmission
+  FROM COVIDData;
+  `
+  console.log(query)
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(rows);
+      console.log(rows);
+    }
+  })
+}
+
+/* ---- Get total deaths from covid---- */
+function getTotalDeaths(req, res) {
+  query = `
+  SELECT SUM(ResidentsTotalAllDeath) as deaths
+  FROM COVIDData;
+  `
+  console.log(query)
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(rows);
+      console.log(rows);
+    }
+  })
+}
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   searchBar: searchBar,
@@ -581,5 +649,9 @@ module.exports = {
   stateStats: stateStats,
   getNearestReportData: getNearestReportData,
   getNearestQACheck: getNearestQACheck,
-  getFPNs: getFPNs
+  getFPNs: getFPNs,
+  getTotalNursingHomes: getTotalNursingHomes,
+  getTotalFines: getTotalFines,
+  getTotalCovidAdmission: getTotalCovidAdmission,
+  getTotalDeaths: getTotalDeaths
 }
