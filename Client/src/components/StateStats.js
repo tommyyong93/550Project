@@ -8,6 +8,8 @@ import {
   Classes,
   Dialog,
   Card,
+  Tooltip,
+  Position
 } from "@blueprintjs/core";
 
 export default class StateStats extends React.Component {
@@ -200,6 +202,10 @@ export default class StateStats extends React.Component {
         <div className='search-container-block'>
           <Card className='state-results-container'>{this.state.selectedState ? `Here are the top 25 nursing homes in ${this.state.stateFullName}` : "Click on a state to learn more!"}
             {this.state.topResults}
+            {this.state.selectedState ?
+              <Tooltip className={Classes.TOOLTIP_INDICATOR} position={Position.RIGHT} content={"write something here about how we ranked these nursing homes"}>
+                How did we rank these nursing homes?
+              </Tooltip> : <></>}
           </Card>
           <div className="map-container">
             <div className='country-row'>
