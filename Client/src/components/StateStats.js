@@ -200,7 +200,7 @@ export default class StateStats extends React.Component {
       <div className="StateStats">
         <PageNavbar active="state"/>
         <div className='search-container-block'>
-          <Card className='state-results-container'>{this.state.selectedState ? `Here are the top 25 nursing homes in ${this.state.stateFullName}` : "Click on a state to learn more!"}
+          <Card className='state-results-container'>{this.state.selectedState ? `Here are the top ${this.state.topResults.length} nursing homes in ${this.state.stateFullName}` : "Click on a state to learn more!"}
             {this.state.topResults}
             {this.state.selectedState ?
               <Tooltip className={Classes.TOOLTIP_INDICATOR} position={Position.RIGHT} content={"write something here about how we ranked these nursing homes"}>
@@ -210,7 +210,7 @@ export default class StateStats extends React.Component {
           <div className="map-container">
             <div className='country-row'>
               <Card className='country-stats-card'>
-                <h1>Country Stats</h1>
+                <h1>Nationwide Statistics</h1>
                 <div className='stats-country'>
                   <div className='single-stat'>
                     <p>Total Number of Nursing Homes</p>
