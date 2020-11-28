@@ -1,13 +1,10 @@
 import React from 'react';
 import '../style/NursingHomeRow.css';
-import {
-  Link
-} from 'react-router-dom'
 
 export default class SimilarsRow extends React.Component {
 
-  constructor(props) {
-    super(props);
+  changeProfile = (name, state, id, lat, long) => {
+    this.props.onProfileChange(name, state, id, lat, long)
   }
 
   changeProfile = (name, state, id, lat, long) => {
@@ -17,11 +14,9 @@ export default class SimilarsRow extends React.Component {
 
   render() {
     return (
-      <div className="nursinghome-row">
-        <div className="nursinghome-name">
-          <span onClick={() => this.changeProfile(this.props.name,this.props.state,this.props.id,this.props.latitude,this.props.longitude)}>{this.props.name}</span>
-        </div>
-      </div>
+      <div className="similarFPNs">
+				<div className="FPNinfo" onClick={()=>this.changeProfile(this.props.name,this.props.state,this.props.id,this.props.latitude,this.props.longitude)}>{this.props.name}</div>
+			</div>
     );
   }
 }

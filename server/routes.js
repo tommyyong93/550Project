@@ -179,7 +179,7 @@ function findSimilarHomes(req, res) {
     SELECT FPN, State, Name, DENSE_RANK() OVER(ORDER BY Grade DESC) AS StateRank
     FROM StateGrades
     ORDER BY StateRank)
-  SELECT s.FPN AS FPN, s.State AS State, s.Name AS Name, StateRank, (12742 * SIN(SQRT(0.5 - COS((l.Latitude - ${vLat}) * PI() / 180) / 2 + (COS(l.Latitude * PI() / 180) * COS(${vLat} * PI() / 180) * (1-COS((l.Longitude - ${vLong})* PI()/180))/2)))) as Distance
+  SELECT s.FPN, s.Name, StateRank, l.State, l.Latitude, l.Longitude, (12742 * SIN(SQRT(0.5 - COS((l.Latitude - ${vLat}) * PI() / 180) / 2 + (COS(l.Latitude * PI() / 180) * COS(${vLat} * PI() / 180) * (1-COS((l.Longitude - ${vLong})* PI()/180))/2)))) as Distance
   FROM Locations l JOIN StateRanks s ON l.FPN=s.FPN
   WHERE (StateRank<(${rank}+10) and StateRank>(${rank}-10)) and s.FPN != '${vFPN}'
   ORDER BY Distance, StateRank
