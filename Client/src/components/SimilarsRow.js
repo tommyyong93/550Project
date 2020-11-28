@@ -10,11 +10,18 @@ export default class SimilarsRow extends React.Component {
     super(props);
   }
 
+  changeProfile = (name, state, id, lat, long) => {
+    if (lat === 0.0 || long === 0.0) return;
+    this.props.onProfileChange(name, state, id, lat, long)
+  }
+
   render() {
     return (
-      <div className="similarFPNs">
-				<div className="FPNinfo">{this.props.Name}: {this.props.FPN}, StateRank: {this.props.StateRank} </div>
-			</div>
+      <div className="nursinghome-row">
+        <div className="nursinghome-name">
+          <span onClick={() => this.changeProfile(this.props.name,this.props.state,this.props.id,this.props.latitude,this.props.longitude)}>{this.props.name}</span>
+        </div>
+      </div>
     );
   }
 }

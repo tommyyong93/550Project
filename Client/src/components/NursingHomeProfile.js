@@ -19,6 +19,8 @@ export default class NursingHomeProfile extends React.Component {
       state: "",
       Zip: "",
       Phone: "",
+      latitude: "",
+      longitude: "",
       OwnershipType: "",
       ProviderType: "",
       NumberOfAllBeds: "",
@@ -62,8 +64,19 @@ export default class NursingHomeProfile extends React.Component {
       OverallAvgVentilatorsInFacility: "",
       StateRank: "",
       CountFPNs: "",
-      OverallRank: ""
+      OverallRank: "",
+      simFPNs: []
     }
+  }
+
+  onProfileChange = (name, state, id, lat, long) => {
+    this.setState({
+      ProviderName: name,
+      state: state,
+      fpn: id,
+      latitude: lat,
+      longitude: long
+    })
   }
 
   componentDidMount() {
@@ -132,7 +145,6 @@ export default class NursingHomeProfile extends React.Component {
         })
       })
       .catch(err => console.log(err));
-
 
     fetch(`http://localhost:8081/stateAvg/${this.props.location.state.state}`, {
         method: 'GET'
@@ -203,7 +215,123 @@ export default class NursingHomeProfile extends React.Component {
             if (!queries) return;
             console.log(queries);
             let queryDivs = queries.map((genreObj, i) =>
-              <SimilarsRow FPN={genreObj.FPN} StateRank={genreObj.StateRank} Name={genreObj.Name}/>
+              <SimilarsRow name={genreObj.Name} state={genreObj.State} id={genreObj.FPN} latitude={genreObj.latitude} longitude={genreObj.longitude} onProfileChange={this.onProfileChange} />
+            );
+            this.setState({
+              simFPNs: queryDivs
+            })
+          })
+          .catch(err => console.log(err));
+      })
+      .catch(err => console.log(err));
+  }
+
+  componentDidUpdate() {
+    fetch(`http://localhost:8081/profile/${this.props.location.state.id}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries);
+        let queryObj = queries[0];
+        this.setState({
+          ProviderName: queryObj.ProviderName,
+          Address: queryObj.Address,
+          City: queryObj.City,
+          Zip: queryObj.Zip,
+          Phone: queryObj.Phone,
+          OwnershipType: queryObj.OwnershipType,
+          ProviderType: queryObj.ProviderType,
+          NumberOfAllBeds: queryObj.NumberOfAllBeds,
+          TotalNumberOfOccupiedBeds: queryObj.TotalNumberOfOccupiedBeds,
+          AveResidentsPerDay: queryObj.AveResidentsPerDay,
+          OverallRating: queryObj.OverallRating,
+          HealthInspectionRating: queryObj.HealthInspectionRating,
+          StaffingRating: queryObj.StaffingRating,
+          QMRating: queryObj.QMRating,
+          TotalWeightedHealthSurveyScore: queryObj.TotalWeightedHealthSurveyScore,
+          NumReportedIncidents: queryObj.NumReportedIncidents,
+          NumSubstantiatedComplaints: queryObj.NumSubstantiatedComplaints,
+          NumFines: queryObj.NumFines,
+          NumPaymentDenials: queryObj.NumPaymentDenials,
+          NumPenalties: queryObj.NumPenalties,
+          ResidentsTotalCovidDeaths: queryObj.ResidentsTotalCovidDeaths,
+          NumVentilatorsInFacility: queryObj.NumVentilatorsInFacility
+        })
+      })
+      .catch(err => console.log(err));
+
+    fetch(`http://localhost:8081/stateAvg/${this.props.location.state.state}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries);
+        let queryObj = queries[0];
+        this.setState({
+          StateAvgOverallRating: queryObj.StateAvgOverallRating,
+          StateAvgHealthInspRating: queryObj.StateAvgHealthInspRating,
+          StateAvgStaffRating: queryObj.StateAvgStaffRating,
+          StateAvgQMRating: queryObj.StateAvgQMRating,
+          StateAvgAverageHrsPerResPerDay: queryObj.StateAvgAverageHrsPerResPerDay,
+          StateAvgReportedIncidents: queryObj.StateAvgReportedIncidents,
+          StateAvgComplaints: queryObj.StateAvgComplaints,
+          StateAvgNumFines: queryObj.StateAvgNumFines,
+          StateAvgNumPenalties: queryObj.StateAvgNumPenalties,
+          StateAvgCovidDeaths: queryObj.StateAvgCovidDeaths,
+          StateAvgVentilatorsInFacility: queryObj.StateAvgVentilatorsInFacility
+        })
+      })
+      .catch(err => console.log(err));
+
+    fetch(`http://localhost:8081/overallAvg`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries);
+        let queryObj = queries[0];
+        this.setState({
+          OverallAvgOverallRating: queryObj.OverallAvgOverallRating,
+          OverallAvgHealthInspRating: queryObj.OverallAvgHealthInspRating,
+          OverallAvgStaffRating: queryObj.OverallAvgStaffRating,
+          OverallAvgQMRating: queryObj.OverallAvgQMRating,
+          OverallAvgAverageHrsPerResPerDay: queryObj.OverallAvgAverageHrsPerResPerDay,
+          OverallAvgReportedIncidents: queryObj.OverallAvgReportedIncidents,
+          OverallAvgComplaints: queryObj.OverallAvgComplaints,
+          OverallAvgNumFines: queryObj.OverallAvgNumFines,
+          OverallAvgNumPenalties: queryObj.OverallAvgNumPenalties,
+          OverallAvgCovidDeaths: queryObj.OverallAvgCovidDeaths,
+          OverallAvgVentilatorsInFacility: queryObj.OverallAvgVentilatorsInFacility
+        })
+      })
+      .catch(err => console.log(err));
+
+    fetch(`http://localhost:8081/rank/${this.props.location.state.id}/${this.props.location.state.state}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries);
+        let queryObj = queries[0];
+        this.setState({
+          StateRank: queryObj.StateRank,
+          CountFPNs: queryObj.CountFPNs,
+          OverallRank: queryObj.OverallRank
+        })
+        fetch(`http://localhost:8081/similar/${this.props.location.state.id}/${this.props.location.state.latitude}/${this.props.location.state.longitude}/${this.props.location.state.state}/${this.state.StateRank}`, {
+            method: 'GET'
+          })
+          .then(res => res.json())
+          .then(queries => {
+            if (!queries) return;
+            console.log(queries);
+            let queryDivs = queries.map((genreObj, i) =>
+              <SimilarsRow name={genreObj.Name} state={genreObj.State} id={genreObj.FPN} latitude={genreObj.latitude} longitude={genreObj.longitude} />
             );
             this.setState({
               simFPNs: queryDivs
@@ -223,6 +351,7 @@ export default class NursingHomeProfile extends React.Component {
             <div className='profile-info'>
               <h1>{this.state.name}</h1>
               <div>
+                <p>FPN: {this.state.fpn}</p>
                 <p>Address: {this.state.Address}, {this.state.City}, {this.state.state}, {this.state.Zip}</p>
                 <p>Phone Number: {this.state.Phone}</p>
                 <p>Ownership Type: {this.state.OwnershipType} </p>
