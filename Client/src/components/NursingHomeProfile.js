@@ -5,7 +5,6 @@ import {
   Card, 
 } from "@blueprintjs/core";
 import '../style/NursingHomeProfile.css';
-import NursingHomeRow from './NursingHomeRow';
 import SimilarsRow from './SimilarsRow';
 
 export default class NursingHomeProfile extends React.Component {

@@ -1,12 +1,15 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
 import USAMap from "react-usa-map";
+import StateRow from './StateRow';
 import '../style/StateStats.css';
 import {
   Button,
   Classes,
   Dialog,
   Card,
+  Tooltip,
+  Position
 } from "@blueprintjs/core";
 
 export default class StateStats extends React.Component {
@@ -15,6 +18,7 @@ export default class StateStats extends React.Component {
 
     this.state = {
       selectedState: "",
+      stateFullName: "",
       showPopup: false,
       OverallRating: "",
       OccupancyRate: "",
@@ -23,16 +27,62 @@ export default class StateStats extends React.Component {
       COVIDreportingRate: "",
       COVIDtestingRate: "",
       StaffingRate: "",
-      PercentageOfHomesWithCOVID: ""
+      PercentageOfHomesWithCOVID: "",
+      // The state variables below are for the country stats
+      totalNursingHomes: "",
+      totalDeaths: "",
+      totalFines: "",
+      totalCovidAdmission: "",
+      // top nursing homes:
+      topResults: []
     };
   }
 
+<<<<<<< HEAD
+=======
+  componentDidMount() {
+    fetch(`http://localhost:8081/totalNursingHomes`, {
+      method: "GET"
+    }).then(res => res.json()).then(queries => {
+      if (!queries) return;
+      this.setState({
+        totalNursingHomes: queries[0].total
+      })
+    })
+    fetch(`http://localhost:8081/totalFines`, {
+      method: "GET"
+    }).then(res => res.json()).then(queries => {
+      if (!queries) return;
+      this.setState({
+        totalFines: queries[0].fines
+      })
+    })
+    fetch(`http://localhost:8081/totalCovidAdmission`, {
+      method: "GET"
+    }).then(res => res.json()).then(queries => {
+      if (!queries) return;
+      this.setState({
+        totalAdmission: queries[0].totalAdmission
+      })
+    })
+    fetch(`http://localhost:8081/totalCovidDeaths`, {
+      method: "GET"
+    }).then(res => res.json()).then(queries => {
+      if (!queries) return;
+      this.setState({
+        totalDeaths: queries[0].deaths
+      })
+    })
+  }
+>>>>>>> 4db79cb1b23a91a0fe73f2f0068f25294efdf4ea
 
   mapHandler = (event) => {
     var state = event.target.dataset.name;
+    var fullstate = this.stateMap[state]
     this.setState({
       selectedState: state,
-      showPopup: true
+      showPopup: true,
+      stateFullName: fullstate
     })
     fetch(`http://localhost:8081/stateStats/${state}`, { 
         method: 'GET'
@@ -40,7 +90,6 @@ export default class StateStats extends React.Component {
       .then(res => res.json())
       .then(queries => {
         if (!queries) return;
-        console.log(queries); 
         let queryObj = queries[0];
         this.setState({
           OverallRating: queryObj.OverallRating,
@@ -54,43 +103,143 @@ export default class StateStats extends React.Component {
         })
       })
       .catch(err => console.log(err));
+    fetch(`http://localhost:8081/topNursingHomesInState/${state}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        var length = queries.length;
+        var queriesArray = [];
+        console.log(queries)
+        for (var i = 0; i < length; i++) {
+          queriesArray[i] = <StateRow
+            key={i + queries[i].Name}
+            name={queries[i].Name}
+            state={queries[i].State}
+            id={queries[i].FPN}
+            latitude={queries[i].Latitude}
+            longitude={queries[i].Longitude}
+            index={i+1}
 
+                            />
+        }
+        this.setState({
+          topResults: queriesArray
+        })
+      })
+      .catch(err => console.log(err));
   };
+
+
 
   handleClose = () => {
     this.setState({
       showPopup: false
     });
   }
+<<<<<<< HEAD
  
+=======
+
+  numberWithCommas = (x) => {
+    if (!x) return
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  stateMap = {
+    AZ: 'Arizona',
+    AL: 'Alabama',
+    AK: 'Alaska',
+    AR: 'Arkansas',
+    CA: 'California',
+    CO: 'Colorado',
+    CT: 'Connecticut',
+    DC: 'District of Columbia',
+    DE: 'Delaware',
+    FL: 'Florida',
+    GA: 'Georgia',
+    HI: 'Hawaii',
+    ID: 'Idaho',
+    IL: 'Illinois',
+    IN: 'Indiana',
+    IA: 'Iowa',
+    KS: 'Kansas',
+    KY: 'Kentucky',
+    LA: 'Louisiana',
+    ME: 'Maine',
+    MD: 'Maryland',
+    MA: 'Massachusetts',
+    MI: 'Michigan',
+    MN: 'Minnesota',
+    MS: 'Mississippi',
+    MO: 'Missouri',
+    MT: 'Montana',
+    NE: 'Nebraska',
+    NV: 'Nevada',
+    NH: 'New Hampshire',
+    NJ: 'New Jersey',
+    NM: 'New Mexico',
+    NY: 'New York',
+    NC: 'North Carolina',
+    ND: 'North Dakota',
+    OH: 'Ohio',
+    OK: 'Oklahoma',
+    OR: 'Oregon',
+    PA: 'Pennsylvania',
+    RI: 'Rhode Island',
+    SC: 'South Carolina',
+    SD: 'South Dakota',
+    TN: 'Tennessee',
+    TX: 'Texas',
+    UT: 'Utah',
+    VT: 'Vermont',
+    VA: 'Virginia',
+    WA: 'Washington',
+    WV: 'West Virginia',
+    WI: 'Wisconsin',
+    WY: 'Wyoming'
+  }
+
+>>>>>>> 4db79cb1b23a91a0fe73f2f0068f25294efdf4ea
   render() {
     return (
       <div className="StateStats">
         <PageNavbar active="state"/>
         <div className='search-container-block'>
+<<<<<<< HEAD
           <Card className='state-results-container'>{this.state.selectedState ? `Here are the top nursing homes in ${this.state.selectedState}` : "Click on a state to learn more!"}
           card content
           </Card> 
+=======
+          <Card className='state-results-container'>{this.state.selectedState ? `Here are the top ${this.state.topResults.length} nursing homes in ${this.state.stateFullName}` : "Click on a state to learn more!"}
+            {this.state.topResults}
+            {this.state.selectedState ?
+              <Tooltip className={Classes.TOOLTIP_INDICATOR} position={Position.RIGHT} content={"write something here about how we ranked these nursing homes"}>
+                How did we rank these nursing homes?
+              </Tooltip> : <></>}
+          </Card>
+>>>>>>> 4db79cb1b23a91a0fe73f2f0068f25294efdf4ea
           <div className="map-container">
             <div className='country-row'>
               <Card className='country-stats-card'>
-                <h1>Country Stats</h1>
+                <h1>Nationwide Statistics</h1>
                 <div className='stats-country'>
                   <div className='single-stat'>
                     <p>Total Number of Nursing Homes</p>
-                    <p>15000</p>
+                    <p>{this.numberWithCommas(this.state.totalNursingHomes)}</p>
                   </div>
                   <div className='single-stat'>
                     <p>Total Number of Fines in Nursing Homes</p>
-                    <p>15000</p>
+                    <p>{"$"+this.numberWithCommas(this.state.totalFines)+".00"}</p>
                   </div>
                   <div className='single-stat'>
                     <p>Total Covid Admission in Nursing Homes</p>
-                    <p>15000</p>
+                    <p>{this.numberWithCommas(this.state.totalAdmission)}</p>
                   </div>
                   <div className='single-stat'>
                     <p>Total Number of Deaths from COVID-19 in Nursing Homes</p>
-                    <p>15000</p>
+                    <p>{this.numberWithCommas(this.state.totalDeaths)}</p>
                   </div>
                 </div>
               </Card>
@@ -100,8 +249,8 @@ export default class StateStats extends React.Component {
                 onClick={this.mapHandler} defaultFill="#DCDCDC"/>
             </div>
             <Dialog
-              onClose={this.handleClose} 
-              title= {`You selected ${this.state.selectedState}`}
+              onClose={this.handleClose}
+              title= {`Here are some statistics on ${this.state.stateFullName}`}
               isOpen={this.state.showPopup}
             >
               <div className={Classes.DIALOG_BODY}>
@@ -109,25 +258,25 @@ export default class StateStats extends React.Component {
                   Overall Rating: {this.state.OverallRating}
                 </p>
                 <p>
-                  Occupancy Rate: {this.state.OccupancyRate}
+                  Occupancy Rate: {this.state.OccupancyRate+"%"}
                 </p>
                 <p>
-                  Resident Case Rate: {this.state.ResidentCaseRate}
+                  Resident Case Rate: {this.state.ResidentCaseRate+"%"}
                 </p>
                 <p>
-                  COVID Mortality Rate: {this.state.COVIDmortalityRate}
+                  COVID Mortality Rate: {this.state.COVIDmortalityRate+"%"}
                 </p>
                 <p>
-                  COVID Reporting Rate: {this.state.COVIDreportingRate}
+                  COVID Reporting Rate: {this.state.COVIDreportingRate+"%"}
                 </p>
                 <p>
-                  COVID Testing Rate: {this.state.COVIDtestingRate}
+                  COVID Testing Rate: {this.state.COVIDtestingRate+"%"}
                 </p>
                 <p>
-                  Staffing Rate: {this.state.StaffingRate}
+                  Average Staffing Hours: {this.state.StaffingRate}
                 </p>
                 <p>
-                  Percentage of Homes with COVID Cases: {this.state.PercentageOfHomesWithCOVID}
+                  Homes with COVID Cases: {this.state.PercentageOfHomesWithCOVID+"%"}
                 </p>
               </div>
               <div className={Classes.DIALOG_FOOTER}>
