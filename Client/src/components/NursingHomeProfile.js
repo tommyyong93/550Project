@@ -345,7 +345,6 @@ export default class NursingHomeProfile extends React.Component {
           .then(res => res.json())
           .then(queries => {
             if (!queries) return;
-            console.log(queries)
             let queryDivs = queries.map((genreObj, i) =>
               <SimilarsRow
                 key={genreObj.FPN}
