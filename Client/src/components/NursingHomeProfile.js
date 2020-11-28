@@ -6,6 +6,9 @@ import {
 } from "@blueprintjs/core";
 import '../style/NursingHomeProfile.css';
 import SimilarsRow from './SimilarsRow';
+import { Icon, Intent } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
+import { Popover, Position, Tooltip } from "@blueprintjs/core";
 
 export default class NursingHomeProfile extends React.Component {
 
@@ -62,7 +65,11 @@ export default class NursingHomeProfile extends React.Component {
       OverallAvgVentilatorsInFacility: "",
       StateRank: "",
       CountFPNs: "",
-      OverallRank: ""
+      OverallRank: "",
+      Flag: "",
+      flagColor: "",
+      flagType: "",
+      flagMessage: ""
     }
   }
 
@@ -133,6 +140,39 @@ export default class NursingHomeProfile extends React.Component {
       })
       .catch(err => console.log(err));
 
+
+    fetch(`http://localhost:8081/hasredflag/${this.props.location.state.id}`, {
+      method: 'GET'
+    })
+      .then(res => res.json()) 
+      .then(queries => {
+        if (!queries) return;
+        console.log(queries);
+        let queryObj = queries[0];    
+        this.setState({
+          Flag: queryObj.flag,
+          flagColor: (queryObj.flag=='true' ? "red" : "black")
+        })
+      })
+      .catch(err => console.log(err));	
+
+
+      fetch(`http://localhost:8081/redflag/${this.props.location.state.id}`, {
+        method: 'GET'
+      })
+        .then(res => res.json()) 
+        .then(queries => {
+          if (!queries) return;
+          console.log(queries);
+          let queryObj = queries[0];    
+          this.setState({
+            flagType: queryObj.flag,
+            flagMessage: (queryObj.flag=='other_flag' ? 'This property is above the 95th percentile for substantiated complaints, fines, or reported incidents' : 
+            (queryObj.flag=='covid_flag' ? 'This property does not submit Covid-19 data, has had a recent Covid-19 outbreak, or does not have adequate PPE supplies' : 
+            (queryObj=='both') ? 'This property has a Covid-19 red flag (does not submit Covid-19 data, has had a recent Covid-19 outbreak, or does not have adequate PPE supplies) and has some other red flag (this property is above the 95th percentile for substantiated complaints, fines, or reported incidents)' : 'This property does not have red flags'))
+          })
+        })
+        .catch(err => console.log(err));	
 
     fetch(`http://localhost:8081/stateAvg/${this.props.location.state.state}`, {
         method: 'GET'
@@ -223,6 +263,12 @@ export default class NursingHomeProfile extends React.Component {
             <div className='profile-info'>
               <h1>{this.state.name}</h1>
               <div>
+              <Popover content={<h1>Popover!</h1>} position={Position.RIGHT}>
+                  <Tooltip content={this.state.flagMessage} position={Position.RIGHT}>
+                    <Icon icon="flag" iconSize={20} color={this.state.flagColor}/>
+                  </Tooltip>
+              </Popover>
+                {/* <Icon icon="flag" iconSize={20} color={this.state.flagColor}/> */}
                 <p>Address: {this.state.Address}, {this.state.City}, {this.state.state}, {this.state.Zip}</p>
                 <p>Phone Number: {this.state.Phone}</p>
                 <p>Ownership Type: {this.state.OwnershipType} </p>

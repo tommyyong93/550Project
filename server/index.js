@@ -54,6 +54,8 @@ app.get('/stateAvg/:state', routes.stateAvg)
 /* ---- Red Flag ---- */
 // if this FPN has a red flag, returns the type of red flag. If no red flag, returns empty array
 app.get('/redflag/:FPN', routes.getRedFlagType);
+// returns true or false for redflag
+app.get('/hasredflag/:FPN', routes.getRedFlagBool);
 
 /* ---- Nearest Nursing Home that reported Data (complex query )---- */
 app.get('/nearestReported/:FPN', routes.getNearestReportData);
