@@ -345,14 +345,15 @@ export default class NursingHomeProfile extends React.Component {
           .then(res => res.json())
           .then(queries => {
             if (!queries) return;
+            console.log(queries)
             let queryDivs = queries.map((genreObj, i) =>
               <SimilarsRow
                 key={genreObj.FPN}
                 name={genreObj.Name}
                 state={genreObj.State}
                 id={genreObj.FPN}
-                latitude={genreObj.latitude}
-                longitude={genreObj.longitude}
+                latitude={genreObj.Latitude}
+                longitude={genreObj.Longitude}
                 onProfileChange={this.onProfileChange} />
             );
             this.setState({
