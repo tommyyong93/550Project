@@ -25,11 +25,7 @@ export default class StateStats extends React.Component {
       StaffingRate: "",
       PercentageOfHomesWithCOVID: ""
     };
-    fetch(`http://localhost:8081/stateStats/${this.props.state.selectedState}`, {
-      method: 'GET'
-    })
   }
-
 
 
   mapHandler = (event) => {
@@ -38,7 +34,7 @@ export default class StateStats extends React.Component {
       selectedState: state,
       showPopup: true
     })
-    fetch(`http://localhost:8081/stateStats/${state}`, {
+    fetch(`http://localhost:8081/stateStats/${state}`, { 
         method: 'GET'
       })
       .then(res => res.json())
@@ -66,13 +62,15 @@ export default class StateStats extends React.Component {
       showPopup: false
     });
   }
-
+ 
   render() {
     return (
       <div className="StateStats">
         <PageNavbar active="state"/>
         <div className='search-container-block'>
-          <Card className='state-results-container'>{this.state.selectedState ? `Here are the top nursing homes in ${this.state.selectedState}` : "Click on a state to learn more!"}</Card>
+          <Card className='state-results-container'>{this.state.selectedState ? `Here are the top nursing homes in ${this.state.selectedState}` : "Click on a state to learn more!"}
+          card content
+          </Card> 
           <div className="map-container">
             <div className='country-row'>
               <Card className='country-stats-card'>
@@ -137,7 +135,7 @@ export default class StateStats extends React.Component {
                   <Button onClick={this.handleClose}>Close</Button>
                 </div>
               </div>
-            </Dialog>
+            </Dialog> 
           </div>
         </div>
 			</div>
