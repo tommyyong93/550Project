@@ -61,6 +61,7 @@ export default class NursingHomeProfile extends React.Component {
       OverallAvgCovidDeaths: "",
       OverallAvgVentilatorsInFacility: "",
       StateRank: "",
+      CountFPNs: "",
       OverallRank: ""
     }
   }
@@ -191,6 +192,7 @@ export default class NursingHomeProfile extends React.Component {
         let queryObj = queries[0];
         this.setState({
           StateRank: queryObj.StateRank,
+          CountFPNs: queryObj.CountFPNs,
           OverallRank: queryObj.OverallRank
         })
         fetch(`http://localhost:8081/similar/${this.props.location.state.id}/${this.props.location.state.latitude}/${this.props.location.state.longitude}/${this.props.location.state.state}/${this.state.StateRank}`, {
@@ -227,8 +229,8 @@ export default class NursingHomeProfile extends React.Component {
                 <p>Provider Type: {this.state.ProviderType} </p>
                 <p>Occupied Beds (as of 11/1): {this.state.TotalNumberOfOccupiedBeds}/{this.state.NumberOfAllBeds}</p>
                 <p>Average # Residents Per Day: {this.state.AveResidentsPerDay}</p>
-                <p>State Rank: {this.state.StateRank}</p>
-                <p>Overall Rank: {this.state.OverallRank}</p>
+                <p>State Rank: {this.state.StateRank}/{this.state.CountFPNs}</p>
+                <p>Overall Rank: {this.state.OverallRank}/15,342</p>
               </div>
             </div>
             <div className='static-map-container'>
@@ -259,29 +261,29 @@ export default class NursingHomeProfile extends React.Component {
             </Card>
             <Card className='hours-card'>
               <h2>State Averages </h2>
-              <p>{this.state.state} Avg Covid Deaths #: {this.state.StateAvgCovidDeaths}</p>
-              <p>{this.state.state} Avg Ventilators #: {this.state.StateAvgVentilatorsInFacility}</p>
-              <p>{this.state.state} Avg Overall Rating: {this.state.StateAvgOverallRating}</p>
-              <p>{this.state.state} Avg Health Inspection Rating: {this.state.StateAvgHealthInspRating} </p>
-              <p>{this.state.state} Avg Staffing Rating: {this.state.StateAvgStaffRating}</p>
-              <p>{this.state.state} Avg Quality Measure Rating: {this.state.StateAvgQMRating}</p>
-              <p>{this.state.state} Avg Reported Incidents #: {this.state.StateAvgReportedIncidents}</p>
-              <p>{this.state.state} Avg Substantiated Complaints #: {this.state.StateAvgComplaints}</p>
-              <p>{this.state.state} Avg Fines #: {this.state.StateAvgNumFines}</p>
-              <p>{this.state.state} Avg Penalties #: {this.state.StateAvgNumPenalties}</p>
+              <p>{this.state.state} Covid Deaths #: {this.state.StateAvgCovidDeaths}</p>
+              <p>{this.state.state} Ventilators #: {this.state.StateAvgVentilatorsInFacility}</p>
+              <p>{this.state.state} Overall Rating: {this.state.StateAvgOverallRating}</p>
+              <p>{this.state.state} Health Inspection Rating: {this.state.StateAvgHealthInspRating} </p>
+              <p>{this.state.state} Staffing Rating: {this.state.StateAvgStaffRating}</p>
+              <p>{this.state.state} Quality Measure Rating: {this.state.StateAvgQMRating}</p>
+              <p>{this.state.state} Reported Incidents #: {this.state.StateAvgReportedIncidents}</p>
+              <p>{this.state.state} Substantiated Complaints #: {this.state.StateAvgComplaints}</p>
+              <p>{this.state.state} Fines #: {this.state.StateAvgNumFines}</p>
+              <p>{this.state.state} Penalties #: {this.state.StateAvgNumPenalties}</p>
             </Card>
             <Card className='others-card'>
               <h2>Overall Averages </h2>
-              <p>Avg Covid Deaths #: {this.state.OverallAvgCovidDeaths}</p>
-              <p>Avg Ventilators #: {this.state.OverallAvgVentilatorsInFacility}</p>
-              <p>Avg Overall Rating: {this.state.OverallAvgOverallRating}</p>
-              <p>Avg Health Inspection Rating: {this.state.OverallAvgHealthInspRating} </p>
-              <p>Avg Staffing Rating: {this.state.OverallAvgStaffRating}</p>
-              <p>Avg Quality Measure Rating: {this.state.OverallAvgQMRating}</p>
-              <p>Avg Reported Incidents #: {this.state.OverallAvgReportedIncidents}</p>
-              <p>Avg Substantiated Complaints #: {this.state.OverallAvgComplaints}</p>
-              <p>Avg Fines #: {this.state.OverallAvgNumFines}</p>
-              <p>Avg Penalties #: {this.state.OverallAvgNumPenalties}</p>
+              <p>Covid Deaths #: {this.state.OverallAvgCovidDeaths}</p>
+              <p>Ventilators #: {this.state.OverallAvgVentilatorsInFacility}</p>
+              <p>Overall Rating: {this.state.OverallAvgOverallRating}</p>
+              <p>Health Inspection Rating: {this.state.OverallAvgHealthInspRating} </p>
+              <p>Staffing Rating: {this.state.OverallAvgStaffRating}</p>
+              <p>Quality Measure Rating: {this.state.OverallAvgQMRating}</p>
+              <p>Reported Incidents #: {this.state.OverallAvgReportedIncidents}</p>
+              <p>Substantiated Complaints #: {this.state.OverallAvgComplaints}</p>
+              <p>Fines #: {this.state.OverallAvgNumFines}</p>
+              <p>Penalties #: {this.state.OverallAvgNumPenalties}</p>
             </Card>
           </div>
           <div className='bottom-row'>
