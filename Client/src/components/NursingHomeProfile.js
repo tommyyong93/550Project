@@ -66,6 +66,139 @@ export default class NursingHomeProfile extends React.Component {
     }
   }
 
+  onProfileChange = async (name, state, id, lat, long) => {
+    await this.setState({
+      ProviderName: name,
+      state: state,
+      fpn: id,
+      latitude: lat,
+      longitude: long
+    })
+    await this.fetchFunction()
+  }
+
+
+  fetchFunction = async () => {
+    await fetch(`http://localhost:8081/profile/${this.state.fpn}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        let queryObj = queries[0];
+
+        this.setState({
+          ProviderName: queryObj.ProviderName,
+          Address: queryObj.Address,
+          City: queryObj.City,
+          Zip: queryObj.Zip,
+          Phone: queryObj.Phone,
+          OwnershipType: queryObj.OwnershipType,
+          ProviderType: queryObj.ProviderType,
+          NumberOfAllBeds: queryObj.NumberOfAllBeds,
+          TotalNumberOfOccupiedBeds: queryObj.TotalNumberOfOccupiedBeds,
+          AveResidentsPerDay: queryObj.AveResidentsPerDay,
+          OverallRating: queryObj.OverallRating,
+          HealthInspectionRating: queryObj.HealthInspectionRating,
+          StaffingRating: queryObj.StaffingRating,
+          QMRating: queryObj.QMRating,
+          TotalWeightedHealthSurveyScore: queryObj.TotalWeightedHealthSurveyScore,
+          NumReportedIncidents: queryObj.NumReportedIncidents,
+          NumSubstantiatedComplaints: queryObj.NumSubstantiatedComplaints,
+          NumFines: queryObj.NumFines,
+          NumPaymentDenials: queryObj.NumPaymentDenials,
+          NumPenalties: queryObj.NumPenalties,
+          ResidentsTotalCovidDeaths: queryObj.ResidentsTotalCovidDeaths,
+          NumVentilatorsInFacility: queryObj.NumVentilatorsInFacility
+        })
+      })
+      .catch(err => console.log(err));
+
+
+    await fetch(`http://localhost:8081/stateAvg/${this.state.state}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        let queryObj = queries[0];
+        this.setState({
+          StateAvgOverallRating: queryObj.StateAvgOverallRating,
+          StateAvgHealthInspRating: queryObj.StateAvgHealthInspRating,
+          StateAvgStaffRating: queryObj.StateAvgStaffRating,
+          StateAvgQMRating: queryObj.StateAvgQMRating,
+          StateAvgAverageHrsPerResPerDay: queryObj.StateAvgAverageHrsPerResPerDay,
+          StateAvgReportedIncidents: queryObj.StateAvgReportedIncidents,
+          StateAvgComplaints: queryObj.StateAvgComplaints,
+          StateAvgNumFines: queryObj.StateAvgNumFines,
+          StateAvgNumPenalties: queryObj.StateAvgNumPenalties,
+          StateAvgCovidDeaths: queryObj.StateAvgCovidDeaths,
+          StateAvgVentilatorsInFacility: queryObj.StateAvgVentilatorsInFacility
+        })
+      })
+      .catch(err => console.log(err));
+
+    await fetch(`http://localhost:8081/overallAvg`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        let queryObj = queries[0];
+        this.setState({
+          OverallAvgOverallRating: queryObj.OverallAvgOverallRating,
+          OverallAvgHealthInspRating: queryObj.OverallAvgHealthInspRating,
+          OverallAvgStaffRating: queryObj.OverallAvgStaffRating,
+          OverallAvgQMRating: queryObj.OverallAvgQMRating,
+          OverallAvgAverageHrsPerResPerDay: queryObj.OverallAvgAverageHrsPerResPerDay,
+          OverallAvgReportedIncidents: queryObj.OverallAvgReportedIncidents,
+          OverallAvgComplaints: queryObj.OverallAvgComplaints,
+          OverallAvgNumFines: queryObj.OverallAvgNumFines,
+          OverallAvgNumPenalties: queryObj.OverallAvgNumPenalties,
+          OverallAvgCovidDeaths: queryObj.OverallAvgCovidDeaths,
+          OverallAvgVentilatorsInFacility: queryObj.OverallAvgVentilatorsInFacility
+        })
+      })
+      .catch(err => console.log(err));
+
+    await fetch(`http://localhost:8081/rank/${this.state.fpn}/${this.state.state}`, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(queries => {
+        if (!queries) return;
+        let queryObj = queries[0];
+        this.setState({
+          StateRank: queryObj.StateRank,
+          CountFPNs: queryObj.CountFPNs,
+          OverallRank: queryObj.OverallRank
+        })
+        fetch(`http://localhost:8081/similar/${this.state.fpn}/${this.state.latitude}/${this.state.longitude}/${this.state.state}/${this.state.StateRank}`, {
+            method: 'GET'
+          })
+          .then(res => res.json())
+          .then(queries => {
+            if (!queries) return;
+            let queryDivs = queries.map((genreObj, i) =>
+              <SimilarsRow
+                key={genreObj.FPN}
+                id={genreObj.FPN}
+                state={genreObj.State}
+                name={genreObj.Name}
+                latitude={genreObj.Latitude}
+                longitude={genreObj.Longitude}
+                onProfileChange={this.onProfileChange}
+              />
+            );
+            this.setState({
+              simFPNs: queryDivs
+            })
+          })
+          .catch(err => console.log(err));
+      })
+      .catch(err => console.log(err));
+  }
+
   componentDidMount() {
     if (this.props.location) {
       if (this.props.location.state) {
@@ -104,7 +237,6 @@ export default class NursingHomeProfile extends React.Component {
       .then(res => res.json())
       .then(queries => {
         if (!queries) return;
-        console.log(queries);
         let queryObj = queries[0];
         this.setState({
           ProviderName: queryObj.ProviderName,
@@ -140,7 +272,6 @@ export default class NursingHomeProfile extends React.Component {
       .then(res => res.json())
       .then(queries => {
         if (!queries) return;
-        console.log(queries);
         let queryObj = queries[0];
         this.setState({
           StateAvgOverallRating: queryObj.StateAvgOverallRating,
@@ -164,7 +295,6 @@ export default class NursingHomeProfile extends React.Component {
       .then(res => res.json())
       .then(queries => {
         if (!queries) return;
-        console.log(queries);
         let queryObj = queries[0];
         this.setState({
           OverallAvgOverallRating: queryObj.OverallAvgOverallRating,
@@ -188,7 +318,6 @@ export default class NursingHomeProfile extends React.Component {
       .then(res => res.json())
       .then(queries => {
         if (!queries) return;
-        console.log(queries);
         let queryObj = queries[0];
         this.setState({
           StateRank: queryObj.StateRank,
@@ -201,9 +330,16 @@ export default class NursingHomeProfile extends React.Component {
           .then(res => res.json())
           .then(queries => {
             if (!queries) return;
-            console.log(queries);
             let queryDivs = queries.map((genreObj, i) =>
-              <SimilarsRow FPN={genreObj.FPN} StateRank={genreObj.StateRank} Name={genreObj.Name}/>
+              <SimilarsRow
+                key={genreObj.FPN}
+                id={genreObj.FPN}
+                state={genreObj.State}
+                name={genreObj.Name}
+                latitude={genreObj.Latitude}
+                longitude={genreObj.Longitude}
+                onProfileChange={this.onProfileChange}
+              />
             );
             this.setState({
               simFPNs: queryDivs
@@ -217,11 +353,11 @@ export default class NursingHomeProfile extends React.Component {
   render() {
     return (
       <div className="profile-page">
-        <PageNavbar selected={this.state.name} active="profile"/>
+        <PageNavbar selected={this.state.ProviderName} active="profile"/>
         <div className='profile-page-card'>
           <div className='top-row'>
             <div className='profile-info'>
-              <h1>{this.state.name}</h1>
+              <h1>{this.state.ProviderName}</h1>
               <div>
                 <p>Address: {this.state.Address}, {this.state.City}, {this.state.state}, {this.state.Zip}</p>
                 <p>Phone Number: {this.state.Phone}</p>
@@ -236,13 +372,13 @@ export default class NursingHomeProfile extends React.Component {
             <div className='static-map-container'>
               {(this.state.latitude !== "" && this.state.longitude !== "") ||
                 (this.state.latitude !== "0.0" && this.state.longitude !== "0.0")
-                ?
-                <ProfileMap
-                  name={this.state.name}
-                  latitude={this.state.latitude}
-                  longitude={this.state.longitude}
-                />
-              : ""}
+                  ?
+                    <ProfileMap
+                      name={this.state.name}
+                      latitude={this.state.latitude}
+                      longitude={this.state.longitude}
+                    />
+                  : ""}
             </div>
           </div>
           <div className='middle-row'>

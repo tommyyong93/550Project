@@ -33,6 +33,7 @@
 
 .middle-row{
   margin: auto;
+  margin-bottom: 40px;
   width: 100%;
   display: flex;
   align-items: flex-start;
