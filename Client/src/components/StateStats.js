@@ -203,14 +203,8 @@ export default class StateStats extends React.Component {
           <Card className='state-results-container'>{this.state.selectedState ? `Here are the top ${this.state.topResults.length} nursing homes in ${this.state.stateFullName}` : "Click on a state to learn more!"}
             {this.state.topResults}
             {this.state.selectedState ?
-              <Tooltip className={Classes.TOOLTIP_INDICATOR} position={Position.RIGHT} content={"write something here about how we ranked these nursing homes"}>
-                How did we rank these nursing homes?
-                We ranked the best nursing homes in the state by selecting the following metrics and assigning
-                them arbitrary weights. The nursing homes are then ranked based on the weighted average of these
-                metrics:
-                (OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay_OverallPercentile, 
-                ReportedIncidents, Complaints, TotalCovidDeaths_OverallPercentile, and VentilatorsInFacility_OverallPercentile) 
-
+              <Tooltip className={Classes.TOOLTIP_INDICATOR} position={Position.RIGHT} content={"We ranked the best nursing homes in the state by selecting the following metrics and assigning them arbitrary weights. The nursing homes are then ranked based on the weighted average of these metrics: (OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay_OverallPercentile, ReportedIncidents, Complaints, TotalCovidDeaths_OverallPercentile, and VentilatorsInFacility_OverallPercentile)"}>
+                How did we rank these nursing homes? 
               </Tooltip> : <></>}
           </Card>
           <div className="map-container">
