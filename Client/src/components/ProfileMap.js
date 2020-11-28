@@ -27,7 +27,7 @@ export default class GoogleMap extends React.Component {
       <div style={{ height: '100%', width: '100%' }}>
         <GoogleMapReact
           bootstrapURLKeys={{ key:process.env.REACT_APP_GOOGLE_API_KEY}}
-          center={{lat : this.props.latitude,lng:this.props.longitude}}
+          center={{lat : this.props.latitude,lng: this.props.longitude}}
           defaultZoom={11}
         >
           {this.props.latitude && this.props.longitude ?
