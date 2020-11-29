@@ -354,7 +354,7 @@ function profileInfo(req, res) {
   SELECT ProviderName, OwnershipType, ProviderType, NumberOfAllBeds, TotalNumberOfOccupiedBeds, AveResidentsPerDay,
   OverallRating, HealthInspectionRating, StaffingRating, QMRating, TotalWeightedHealthSurveyScore, NumReportedIncidents,
   NumSubstantiatedComplaints, NumFines, NumPaymentDenials, NumPenalties, ResidentsTotalCovidDeaths, NumVentilatorsInFacility,
-  Address, City, State, Zip, CountyName, Phone
+  Address, City, State, Zip, CountyName, Phone, PassedQACheck
   FROM Locations l JOIN Providers p ON p.FPN=l.FPN JOIN CMSData cm ON cm.FPN=p.FPN JOIN COVIDData c ON c.FPN=cm.FPN
   WHERE p.FPN ='${varFPN}';
 `;

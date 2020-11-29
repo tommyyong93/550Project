@@ -78,7 +78,8 @@ export default class NursingHomeProfile extends React.Component {
       Flag: "",
       flagColor: "",
       flagType: "",
-      flagMessage: ""
+      flagMessage: "",
+      nearestQACheck: ""
     }
   }
 
@@ -276,7 +277,8 @@ export default class NursingHomeProfile extends React.Component {
           NumPaymentDenials: queryObj.NumPaymentDenials,
           NumPenalties: queryObj.NumPenalties,
           ResidentsTotalCovidDeaths: queryObj.ResidentsTotalCovidDeaths,
-          NumVentilatorsInFacility: queryObj.NumVentilatorsInFacility
+          NumVentilatorsInFacility: queryObj.NumVentilatorsInFacility,
+          passedQA: queryObj.PassedQACheck
         })
       })
       .catch(err => console.log(err));
@@ -287,7 +289,7 @@ export default class NursingHomeProfile extends React.Component {
         .then(res => res.json()) 
         .then(queries => {
           if (!queries) return;
-          console.log(queries);
+          // console.log(queries);
           let queryObj = queries[0];    
           this.setState({
             Flag: queryObj.flag,
@@ -295,6 +297,20 @@ export default class NursingHomeProfile extends React.Component {
           })
         })
         .catch(err => console.log(err));	
+
+        fetch(`http://localhost:8081/nearestQA/${this.props.location.state.id}`, {
+          method: 'GET'
+        })
+          .then(res => res.json()) 
+          .then(queries => {
+            if (!queries) return;
+            // console.log(queries);
+            let queryObj = queries[0];    
+            this.setState({
+              nearestQACheck: queryObj.YesReport,
+            })
+          })
+          .catch(err => console.log(err));
   
   
         fetch(`http://localhost:8081/redflag/${this.props.location.state.id}`, {
@@ -303,13 +319,13 @@ export default class NursingHomeProfile extends React.Component {
           .then(res => res.json()) 
           .then(queries => {
             if (!queries) return;
-            console.log(queries);
+            // console.log(queries);
             let queryObj = queries[0];    
             this.setState({
               flagType: queryObj.flag,
               flagMessage: (queryObj.flag=='other_flag' ? 'This property is above the 95th percentile for substantiated complaints, fines, or reported incidents' : 
               (queryObj.flag=='covid_flag' ? 'This property does not submit Covid-19 data, has had a recent Covid-19 outbreak, or does not have adequate PPE supplies' : 
-              (queryObj=='both') ? 'This property has a Covid-19 red flag (does not submit Covid-19 data, has had a recent Covid-19 outbreak, or does not have adequate PPE supplies) and has some other red flag (this property is above the 95th percentile for substantiated complaints, fines, or reported incidents)' : 'This property does not have red flags'))
+              'This property has both a Covid-19 red flag (no data, recent outbreak) and another red flag (high complaints, incidents, fines)'))
             })
           })
           .catch(err => console.log(err));
@@ -630,6 +646,19 @@ export default class NursingHomeProfile extends React.Component {
                   </Tooltip> : <></>}
 			    		</div>
             </Card>
+          </div>
+          <div>
+          {this.state.passedQA=='N' ?
+              <div className='bottom-row'>
+                <Card className='additional-card'>
+                  <Tooltip content='This nursing home did not pass QA check' position={Position.RIGHT}>
+                    <h2>Here is the closest nursing home that passed QA Check: </h2>
+                  </Tooltip> 
+                  <div className="results-container" id="results">
+                    {this.state.nearestQACheck}
+                  </div> 
+                </Card>
+            </div>: ""}
           </div>
         </div>
       </div>
