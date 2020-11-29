@@ -554,12 +554,12 @@ function getNearestReportData(req, res) {
       ) AS Y)
   SELECT A.NoReport, MIN(A.Distance) as Distance
   FROM AllPairs A)
-  SELECT M.NoReport, P.YesReport, P.YesFPN, P.YesState, M.Distance
+  SELECT M.NoReport, P.YesReport, P.YesFPN, P.YesState, M.Distance, P.Latitude, P.Longitude
   FROM MinDist M JOIN (
     WITH NoData AS (SELECT P.ProviderName, L.State, L.Longitude, L.Latitude
     FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
     WHERE C.SubmittedData = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0)
-    SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
+    SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, Y.Latitude, Y.Longitude, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
     FROM NoData N, (SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
     FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
     WHERE C.SubmittedData = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0) AS Y
@@ -595,12 +595,12 @@ function getNearestQACheck(req, res) {
       ) AS Y)
   SELECT A.NoReport, MIN(A.Distance) as Distance
   FROM AllPairs A)
-  SELECT M.NoReport, P.YesReport, P.YesFPN, P.YesState, M.Distance
+  SELECT M.NoReport, P.YesReport, P.YesFPN, P.YesState, M.Distance, P.Latitude, P.Longitude
   FROM MinDist M JOIN (
     WITH NoData AS (SELECT P.ProviderName, L.State, L.Longitude, L.Latitude
     FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
     WHERE C.PassedQACheck = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0)
-    SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
+    SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, Y. Latitude, Y.Longitude, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
     FROM NoData N, (SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
     FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
     WHERE C.PassedQACheck = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0) AS Y

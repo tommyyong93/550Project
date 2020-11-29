@@ -78,8 +78,7 @@ export default class NursingHomeProfile extends React.Component {
       Flag: "",
       flagColor: "",
       flagType: "",
-      flagMessage: "",
-      nearestQACheck: ""
+      flagMessage: ""
     }
   }
 
@@ -126,11 +125,67 @@ export default class NursingHomeProfile extends React.Component {
           NumPaymentDenials: queryObj.NumPaymentDenials,
           NumPenalties: queryObj.NumPenalties,
           ResidentsTotalCovidDeaths: queryObj.ResidentsTotalCovidDeaths,
-          NumVentilatorsInFacility: queryObj.NumVentilatorsInFacility
+          NumVentilatorsInFacility: queryObj.NumVentilatorsInFacility,
+          passedQA: queryObj.PassedQACheck
         })
       })
       .catch(err => console.log(err));
 
+
+     await fetch(`http://localhost:8081/hasredflag/${this.props.location.state.id}`, {
+        method: 'GET'
+      })
+        .then(res => res.json()) 
+        .then(queries => {
+          if (!queries) return;
+          let queryObj = queries[0];    
+          this.setState({
+            Flag: queryObj.flag,
+            flagColor: (queryObj.flag=='true' ? "red" : "black")
+          })
+        })
+        .catch(err => console.log(err));	
+
+    await fetch(`http://localhost:8081/nearestQA/${this.props.location.state.id}`, {
+          method: 'GET'
+        })
+          .then(res => res.json()) 
+          .then(queries => {
+            if (!queries) return;
+            let queryDivs = queries.map((genreObj, i) =>
+              <SimilarsRow
+                key={genreObj.YesFPN}
+                id={genreObj.YesFPN}
+                state={genreObj.YesState}
+                name={genreObj.YesReport}
+                latitude={genreObj.Latitude}
+                longitude={genreObj.Longitude}
+                onProfileChange={this.onProfileChange}
+              />
+            );
+            this.setState({
+              nearestQACheck: queryDivs
+            })
+          })
+          .catch(err => console.log(err));
+  
+  
+    await fetch(`http://localhost:8081/redflag/${this.props.location.state.id}`, {
+          method: 'GET'
+        })
+          .then(res => res.json()) 
+          .then(queries => {
+            if (!queries) return;
+            // console.log(queries);
+            let queryObj = queries[0];    
+            this.setState({
+              flagType: queryObj.flag,
+              flagMessage: (queryObj.flag=='other_flag' ? 'This property is above the 95th percentile for substantiated complaints, fines, or reported incidents' : 
+              (queryObj.flag=='covid_flag' ? 'This property does not submit Covid-19 data, has had a recent Covid-19 outbreak, or does not have adequate PPE supplies' : 
+              'This property has both a Covid-19 red flag (no data, recent outbreak) and another red flag (high complaints, incidents, fines)'))
+            })
+          })
+          .catch(err => console.log(err));
 
     await fetch(`http://localhost:8081/stateAvg/${this.state.state}`, {
         method: 'GET'
@@ -305,12 +360,28 @@ export default class NursingHomeProfile extends React.Component {
           .then(queries => {
             if (!queries) return;
             // console.log(queries);
-            let queryObj = queries[0];    
+            let queryDivs = queries.map((genreObj, i) =>
+              <SimilarsRow
+                key={genreObj.YesFPN}
+                id={genreObj.YesFPN}
+                state={genreObj.YesState}
+                name={genreObj.YesReport}
+                latitude={genreObj.Latitude}
+                longitude={genreObj.Longitude}
+                onProfileChange={this.onProfileChange}
+              />
+            );
             this.setState({
-              nearestQACheck: queryObj.YesReport,
+              nearestQACheck: queryDivs
             })
           })
           .catch(err => console.log(err));
+          //   let queryObj = queries[0];    
+          //   this.setState({
+          //     nearestQACheck: queryObj.YesReport,
+          //   })
+          // })
+          // .catch(err => console.log(err));
   
   
         fetch(`http://localhost:8081/redflag/${this.props.location.state.id}`, {
@@ -560,7 +631,12 @@ export default class NursingHomeProfile extends React.Component {
               <h1>{this.state.ProviderName}</h1>
               <div>
               {this.state.Flag=='true' ?
-                  <Tooltip content={this.state.flagMessage} position={Position.RIGHT}>
+                  <Tooltip modifiers={{
+                    preventOverflow: { enabled: false },
+                    flip: { enabled: false }
+                  }}
+                  className="tick-tooltip"
+                  content={this.state.flagMessage} position={Position.RIGHT}>
                     <Icon icon="flag" iconSize={20} color={this.state.flagColor}/>
                   </Tooltip> : <div></div>}
                 <p>Address: {this.state.Address}, {this.state.City}, {this.state.state}, {this.state.Zip}</p>
@@ -638,7 +714,12 @@ export default class NursingHomeProfile extends React.Component {
           {this.state.passedQA=='N' ?
               <div className='bottom-row'>
                 <Card className='additional-card'>
-                  <Tooltip content='This nursing home did not pass QA check' position={Position.RIGHT}>
+                  <Tooltip modifiers={{
+                    preventOverflow: { enabled: false },
+                   flip: { enabled: false }
+                     }}
+                     className="tick-tooltip"
+                    content='This nursing home did not pass QA check' position={Position.RIGHT}>
                     <h2>Here is the closest nursing home that passed QA Check: </h2>
                   </Tooltip> 
                   <div className="results-container" id="results">
