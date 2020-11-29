@@ -483,7 +483,7 @@ export default class NursingHomeProfile extends React.Component {
         </Tooltip>
       )
     } else {
-      (
+      return (
         <Tooltip
           modifiers={{
             preventOverflow: { enabled: false },
