@@ -203,7 +203,16 @@ export default class StateStats extends React.Component {
           <Card className='state-results-container'>{this.state.selectedState ? `Here are the top ${this.state.topResults.length} nursing homes in ${this.state.stateFullName}` : "Click on a state to learn more!"}
             {this.state.topResults}
             {this.state.selectedState ?
-              <Tooltip className={Classes.TOOLTIP_INDICATOR} position={Position.RIGHT} content={"write something here about how we ranked these nursing homes"}>
+              <Tooltip
+                modifiers={{
+                  preventOverflow: { enabled: false },
+                  flip: { enabled: false }
+                }}
+                className="Tooltip"
+                position={Position.RIGHT}
+                content="The nursing homes are ranked based on the weighted average of these metrics:
+                overall rating, health inspector rating, staff rating, QM rating, average staff hours, report incidents, complaints, total Covid-19 deaths."
+              >
                 How did we rank these nursing homes?
               </Tooltip> : <></>}
           </Card>
@@ -242,7 +251,7 @@ export default class StateStats extends React.Component {
             >
               <div className={Classes.DIALOG_BODY}>
                 <p>
-                  Overall Rating: {this.state.OverallRating}
+                  Overall Rating (out of 5): {this.state.OverallRating}
                 </p>
                 <p>
                   Occupancy Rate: {this.state.OccupancyRate+"%"}
@@ -260,7 +269,7 @@ export default class StateStats extends React.Component {
                   COVID Testing Rate: {this.state.COVIDtestingRate+"%"}
                 </p>
                 <p>
-                  Average Staffing Hours: {this.state.StaffingRate}
+                  Average Staffing Hours Per Day: {this.state.StaffingRate}
                 </p>
                 <p>
                   Homes with COVID Cases: {this.state.PercentageOfHomesWithCOVID+"%"}

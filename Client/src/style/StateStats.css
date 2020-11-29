@@ -67,3 +67,8 @@
   align-items: center;
   justify-content: center;
 }
+
+.Tooltip{
+  overflow: hidden;
+  border-bottom: 1px dotted;
+}
