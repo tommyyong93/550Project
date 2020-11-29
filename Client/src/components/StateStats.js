@@ -108,7 +108,6 @@ export default class StateStats extends React.Component {
         if (!queries) return;
         var length = queries.length;
         var queriesArray = [];
-        console.log(queries)
         for (var i = 0; i < length; i++) {
           queriesArray[i] = <StateRow
             key={i + queries[i].Name}
