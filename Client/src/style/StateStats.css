@@ -67,3 +67,7 @@
   align-items: center;
   justify-content: center;
 }
+
+.Tooltip{
+  overflow: hidden;
+}

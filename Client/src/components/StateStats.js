@@ -203,7 +203,15 @@ export default class StateStats extends React.Component {
           <Card className='state-results-container'>{this.state.selectedState ? `Here are the top ${this.state.topResults.length} nursing homes in ${this.state.stateFullName}` : "Click on a state to learn more!"}
             {this.state.topResults}
             {this.state.selectedState ?
-              <Tooltip className={Classes.TOOLTIP_INDICATOR} position={Position.RIGHT} content={"write something here about how we ranked these nursing homes"}>
+              <Tooltip
+                modifiers={{
+                  preventOverflow: { enabled: false },
+                  flip: { enabled: false }
+                }}
+                className="Tooltip"
+                position={Position.RIGHT}
+                content={"write something here about how we ranked these nursing homes"}
+              >
                 How did we rank these nursing homes?
               </Tooltip> : <></>}
           </Card>
