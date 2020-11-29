@@ -615,6 +615,19 @@ export default class NursingHomeProfile extends React.Component {
               <h2>Here are some similar nursing homes: </h2>
               <div className="results-container" id="results">
 			    			{this.state.simFPNs}
+                <br></br>
+                {this.state.simFPNs ?
+                  <Tooltip
+                    modifiers={{
+                      preventOverflow: { enabled: false },
+                      flip: { enabled: false }
+                    }}
+                    className="Tooltip"
+                    position={Position.RIGHT}
+                    content="Similar nursing homes are identified based on ranking and proximity."
+                  >
+                    How did we identify these nursing homes as similar?
+                  </Tooltip> : <></>}
 			    		</div>
             </Card>
           </div>
