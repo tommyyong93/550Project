@@ -70,4 +70,5 @@
 
 .Tooltip{
   overflow: hidden;
+  border-bottom: 1px dotted;
 }
