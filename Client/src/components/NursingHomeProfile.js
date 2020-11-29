@@ -364,6 +364,141 @@ export default class NursingHomeProfile extends React.Component {
       .catch(err => console.log(err));
   }
 
+  stateMap = {
+    AZ: 'Arizona',
+    AL: 'Alabama',
+    AK: 'Alaska',
+    AR: 'Arkansas',
+    CA: 'California',
+    CO: 'Colorado',
+    CT: 'Connecticut',
+    DC: 'District of Columbia',
+    DE: 'Delaware',
+    FL: 'Florida',
+    GA: 'Georgia',
+    HI: 'Hawaii',
+    ID: 'Idaho',
+    IL: 'Illinois',
+    IN: 'Indiana',
+    IA: 'Iowa',
+    KS: 'Kansas',
+    KY: 'Kentucky',
+    LA: 'Louisiana',
+    ME: 'Maine',
+    MD: 'Maryland',
+    MA: 'Massachusetts',
+    MI: 'Michigan',
+    MN: 'Minnesota',
+    MS: 'Mississippi',
+    MO: 'Missouri',
+    MT: 'Montana',
+    NE: 'Nebraska',
+    NV: 'Nevada',
+    NH: 'New Hampshire',
+    NJ: 'New Jersey',
+    NM: 'New Mexico',
+    NY: 'New York',
+    NC: 'North Carolina',
+    ND: 'North Dakota',
+    OH: 'Ohio',
+    OK: 'Oklahoma',
+    OR: 'Oregon',
+    PA: 'Pennsylvania',
+    RI: 'Rhode Island',
+    SC: 'South Carolina',
+    SD: 'South Dakota',
+    TN: 'Tennessee',
+    TX: 'Texas',
+    UT: 'Utah',
+    VT: 'Vermont',
+    VA: 'Virginia',
+    WA: 'Washington',
+    WV: 'West Virginia',
+    WI: 'Wisconsin',
+    WY: 'Wyoming'
+  }
+
+  isBetterThanState = () => {
+    var totalProfile = 0;
+    if (this.state.OverallRating && this.state.HealthInspectionRating && this.state.StaffingRating && this.state.QMRating) {
+      totalProfile = (this.state.OverallRating) + (this.state.HealthInspectionRating) + (this.state.StaffingRating) + (this.state.QMRating)
+    }
+    var totalState = 0;
+    if (this.state.StateAvgOverallRating && this.state.StateAvgHealthInspRating && this.state.StateAvgStaffRating && this.state.StateAvgQMRating) {
+      totalState = (this.state.StateAvgOverallRating) + (this.state.StateAvgHealthInspRating) + (this.state.StateAvgStaffRating) + (this.state.StateAvgQMRating)
+    }
+    if (totalProfile > totalState && totalState !== 0 && totalProfile !== 0) {
+      return (
+        <Tooltip
+          modifiers={{
+            preventOverflow: { enabled: false },
+            flip: { enabled: false }
+          }}
+          className="tick-tooltip"
+          position={Position.RIGHT}
+          content={`${this.state.ProviderName} is rated better than the average rating of all nursing homes in ${this.stateMap[this.state.state]}`}
+        >
+          <Icon icon="endorsed" iconSize={20} color="green"/>
+        </Tooltip>
+      )
+    } else {
+      return (
+        <Tooltip
+          modifiers={{
+            preventOverflow: { enabled: false },
+            flip: { enabled: false }
+          }}
+          className="tick-tooltip"
+          position={Position.RIGHT}
+          content={`${this.state.ProviderName} is rated worse than the average rating of all nursing homes in ${this.stateMap[this.state.state]}`}
+        >
+          <Icon icon="ban-circle" iconSize={20} color="red"/>
+        </Tooltip>
+      )
+    }
+  }
+
+  isBetterThanOverall = () => {
+    var totalState = 0;
+    if (this.state.StateAvgOverallRating && this.state.StateAvgHealthInspRating && this.state.StateAvgStaffRating && this.state.StateAvgQMRating) {
+      totalState = (this.state.StateAvgOverallRating) + (this.state.StateAvgHealthInspRating) + (this.state.StateAvgStaffRating) + (this.state.StateAvgQMRating)
+
+    }
+    var totalOverall = 0;
+    if (this.state.OverallAvgOverallRating && this.state.OverallAvgHealthInspRating && this.state.OverallAvgStaffRating && this.state.OverallAvgQMRating) {
+      totalOverall = (this.state.OverallAvgOverallRating) + (this.state.OverallAvgHealthInspRating) + (this.state.OverallAvgStaffRating) + (this.state.OverallAvgQMRating)
+    }
+    if (totalState > totalOverall && totalState !== 0 && totalOverall !== 0) {
+      return (
+        <Tooltip
+          modifiers={{
+            preventOverflow: { enabled: false },
+            flip: { enabled: false }
+          }}
+          className="tick-tooltip"
+          position={Position.RIGHT}
+          content={`Nursing homes in ${this.stateMap[this.state.state]} are rated better than the average rating of all nursing homes in the nation`}
+        >
+          <Icon icon="endorsed" iconSize={20} color="green"/>
+        </Tooltip>
+      )
+    } else {
+      (
+        <Tooltip
+          modifiers={{
+            preventOverflow: { enabled: false },
+            flip: { enabled: false }
+          }}
+          className="tick-tooltip"
+          position={Position.RIGHT}
+          content={`Nursing homes in ${this.stateMap[this.state.state]} are rated worse than the average rating of all nursing homes in the nation`}
+        >
+          <Icon icon="ban-circle" iconSize={20} color="red"/>
+        </Tooltip>
+      )
+    }
+  }
+
   render() {
     return (
       <div className="profile-page">
@@ -403,39 +538,39 @@ export default class NursingHomeProfile extends React.Component {
           </div>
           <div className='middle-row'>
             <Card className='ratings-card'>
-              <h2>Stats</h2>
+              <h2>Statistics {this.isBetterThanState()}</h2>
               <p>Residents Total Covid Deaths #: {this.state.ResidentsTotalCovidDeaths}</p>
               <p>Ventilators In Facility #: {this.state.NumVentilatorsInFacility}</p>
-              <p>Overall Rating: {this.state.OverallRating}</p>
-              <p>Health Inspection Rating: {this.state.HealthInspectionRating} </p>
-              <p>Staffing Rating: {this.state.StaffingRating}</p>
-              <p>Quality Measure Rating: {this.state.QMRating}</p>
+              <p>Overall Rating: {this.state.OverallRating}/5</p>
+              <p>Health Inspection Rating: {this.state.HealthInspectionRating}/5</p>
+              <p>Staffing Rating: {this.state.StaffingRating}/5</p>
+              <p>Quality Measure Rating: {this.state.QMRating}/5</p>
               <p>Reported Incidents #: {this.state.NumReportedIncidents}</p>
               <p>Substantiated Complaints #: {this.state.NumSubstantiatedComplaints}</p>
               <p>Fines #: {this.state.NumFines}</p>
               <p>Penalties #: {this.state.NumPenalties}</p>
             </Card>
             <Card className='hours-card'>
-              <h2>State Averages </h2>
-              <p>{this.state.state} Covid Deaths #: {this.state.StateAvgCovidDeaths}</p>
-              <p>{this.state.state} Ventilators #: {this.state.StateAvgVentilatorsInFacility}</p>
-              <p>{this.state.state} Overall Rating: {this.state.StateAvgOverallRating}</p>
-              <p>{this.state.state} Health Inspection Rating: {this.state.StateAvgHealthInspRating} </p>
-              <p>{this.state.state} Staffing Rating: {this.state.StateAvgStaffRating}</p>
-              <p>{this.state.state} Quality Measure Rating: {this.state.StateAvgQMRating}</p>
-              <p>{this.state.state} Reported Incidents #: {this.state.StateAvgReportedIncidents}</p>
-              <p>{this.state.state} Substantiated Complaints #: {this.state.StateAvgComplaints}</p>
-              <p>{this.state.state} Fines #: {this.state.StateAvgNumFines}</p>
-              <p>{this.state.state} Penalties #: {this.state.StateAvgNumPenalties}</p>
+              <h2>{this.stateMap[this.state.state]}  State Averages {this.isBetterThanOverall()}</h2>
+              <p>Covid Deaths #: {this.state.StateAvgCovidDeaths}</p>
+              <p>Ventilators #: {this.state.StateAvgVentilatorsInFacility}</p>
+              <p>Overall Rating: {this.state.StateAvgOverallRating}/5</p>
+              <p>Health Inspection Rating: {this.state.StateAvgHealthInspRating}/5</p>
+              <p>Staffing Rating: {this.state.StateAvgStaffRating}/5</p>
+              <p>Quality Measure Rating: {this.state.StateAvgQMRating}/5</p>
+              <p>Reported Incidents #: {this.state.StateAvgReportedIncidents}</p>
+              <p>Substantiated Complaints #: {this.state.StateAvgComplaints}</p>
+              <p>Fines #: {this.state.StateAvgNumFines}</p>
+              <p>Penalties #: {this.state.StateAvgNumPenalties}</p>
             </Card>
             <Card className='others-card'>
-              <h2>Overall Averages </h2>
+              <h2>Overall Averages</h2>
               <p>Covid Deaths #: {this.state.OverallAvgCovidDeaths}</p>
               <p>Ventilators #: {this.state.OverallAvgVentilatorsInFacility}</p>
-              <p>Overall Rating: {this.state.OverallAvgOverallRating}</p>
-              <p>Health Inspection Rating: {this.state.OverallAvgHealthInspRating} </p>
-              <p>Staffing Rating: {this.state.OverallAvgStaffRating}</p>
-              <p>Quality Measure Rating: {this.state.OverallAvgQMRating}</p>
+              <p>Overall Rating: {this.state.OverallAvgOverallRating}/5</p>
+              <p>Health Inspection Rating: {this.state.OverallAvgHealthInspRating}/5</p>
+              <p>Staffing Rating: {this.state.OverallAvgStaffRating}/5</p>
+              <p>Quality Measure Rating: {this.state.OverallAvgQMRating}/5</p>
               <p>Reported Incidents #: {this.state.OverallAvgReportedIncidents}</p>
               <p>Substantiated Complaints #: {this.state.OverallAvgComplaints}</p>
               <p>Fines #: {this.state.OverallAvgNumFines}</p>
