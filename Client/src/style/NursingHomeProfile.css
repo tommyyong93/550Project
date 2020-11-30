@@ -69,6 +69,14 @@
 }
 
 .additional-card{
-  margin: 0;
+  margin: 0 auto;
   width: 97%;
+  overflow: scroll;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.botTitle{
+  font-size: 18px;
 }
