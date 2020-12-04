@@ -692,6 +692,15 @@ export default class NursingHomeProfile extends React.Component {
     }
   }
 
+  formatPhoneNumber = (phoneNumberString) => {
+    var cleaned = ('' + phoneNumberString).replace(/\D/g, '')
+    var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
+    if (match) {
+      return '(' + match[1] + ') ' + match[2] + '-' + match[3]
+    }
+    return null
+  }
+
 
 
   render() {
@@ -713,7 +722,7 @@ export default class NursingHomeProfile extends React.Component {
                     <Icon icon="flag" iconSize={20} color={this.state.flagColor}/>
                   </Tooltip> : <div></div>}
                 <p>Address: {this.state.Address}, {this.state.City}, {this.state.state}, {this.state.Zip}</p>
-                <p>Phone Number: {this.state.Phone}</p>
+                <p>Phone Number: {this.formatPhoneNumber(this.state.Phone)}</p>
                 <p>Ownership Type: {this.state.OwnershipType} </p>
                 <p>Provider Type: {this.state.ProviderType} </p>
                 <p>Occupied Beds (as of 11/1): {this.state.TotalNumberOfOccupiedBeds}/{this.state.NumberOfAllBeds}</p>
