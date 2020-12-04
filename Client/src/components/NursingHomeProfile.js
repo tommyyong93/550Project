@@ -70,7 +70,7 @@ export default class NursingHomeProfile extends React.Component {
       flagColor: "",
       flagType: "",
       flagMessage: "",
-      nearestReported: []
+      nearestReported: [],
     }
   }
 
@@ -551,6 +551,12 @@ export default class NursingHomeProfile extends React.Component {
     }
   }
 
+  noLatLong = () => {
+    if (!this.state.longitude && !this.state.latitude) {
+      return (<div>Unfortunately this nursing home has not provided location data, so we cannot provide the next nearest nursing home</div>)
+    }
+  }
+
   stateMap = {
     AZ: 'Arizona',
     AL: 'Alabama',
@@ -801,6 +807,7 @@ export default class NursingHomeProfile extends React.Component {
                     </Tooltip></h2>
                     <div className="results-container" id="results">
                       {this.state.nearestQACheck}
+                      {this.noLatLong()}
                     </div>
                   </div> : this.qaCheckComponent() }
               </div>
@@ -817,6 +824,7 @@ export default class NursingHomeProfile extends React.Component {
                     </Tooltip></h2>
                     <div className="results-container" id="results">
                       {this.state.nearestReported}
+                      {this.noLatLong()}
                     </div>
                   </div>: <h2 className='botTitle'>{this.state.ProviderName} reported Covid-19 data <Icon icon="small-tick" iconSize={20} color="green"/></h2>}
               </div>

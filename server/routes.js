@@ -105,7 +105,7 @@ function stateStats(req, res) {
   var query = `
   WITH Occupancy(FPN, state, occupied, total, rate) AS
   (SELECT P.FPN, L.State, P.TotalNumberofOccupiedBeds, P.CertifiedBeds, P.TotalNumberofOccupiedBeds/P.CertifiedBeds
-  FROM Locations L JOIN Providers P ON L.FPN = P.FPN),
+  FROM Locations L JOIN Providers P ON L.FPN = P.FPN WHERE L.State = '${state}'),
 
   ResidentCases(FPN, state, rate) AS
   (SELECT P.FPN, L.State, CD.ResidentsTotalConfirmed/P.TotalNumberofOccupiedBeds AS rate
@@ -709,7 +709,7 @@ function getTopNursingHomesInState(req, res) {
   var query = `
   WITH OverallPercentiles AS (
     SELECT l.State AS State, p.FPN AS FPN, p.ProviderName AS Name, cms.OverallRating AS OverallRating, cms.HealthInspectionRating AS HealthInspRating, cms.StaffingRating AS StaffRating, cms.QMRating AS QMRating, ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS AverageHrsPerResPerDay, ROUND(PERCENT_RANK() OVER (ORDER BY ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3)),6) AS AverageHrsPerResPerDay_OverallPercentile, cms.NumReportedIncidents AS ReportedIncidents, cms.NumSubstantiatedComplaints AS Complaints, cov.ResidentsTotalCovidDeaths AS TotalCovidDeaths, ROUND(PERCENT_RANK() OVER (ORDER BY cov.ResidentsTotalCovidDeaths),6) AS TotalCovidDeaths_OverallPercentile,  cov.NumVentilatorsInFacility AS VentilatorsInFacility, ROUND(PERCENT_RANK() OVER (ORDER BY cov.NumVentilatorsInFacility),6) AS VentilatorsInFacility_OverallPercentile
-    FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN),
+    FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN WHERE l.State = '${State}'),
   OverallRanks AS (
     SELECT State, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_OverallPercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_OverallPercentile)*(-0.55) + (VentilatorsInFacility_OverallPercentile)*(0.05))*10) AS Grade, DENSE_RANK() OVER(ORDER BY (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_OverallPercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_OverallPercentile)*(-0.55) + (VentilatorsInFacility_OverallPercentile)*(0.05))*10) DESC) AS OverallRank
     FROM OverallPercentiles
