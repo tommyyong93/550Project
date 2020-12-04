@@ -117,7 +117,6 @@ export default class StateStats extends React.Component {
             latitude={queries[i].Latitude}
             longitude={queries[i].Longitude}
             index={i+1}
-
                             />
         }
         this.setState({
