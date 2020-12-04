@@ -11,6 +11,20 @@ The year 2020 will always be remembered due to the Covid-19 global pandemic. The
 ## Features
 Users of Nurse Next Door can search for nursing homes based on a wide variety of filters and requirements. Users can carefully analyze which nursing homes were aptly prepared for the pandemic and take note of those that were caught off-guard. Nurse Next Door provides key ranking metrics, suggestions on similar nursing homes, warning indicators, and state and nation wide statistics so that you can find a nursing home that you’ll love.
 
+## Development
+We have a MySQL instance set up on Amazon Web Services. We use a Node/Express backend and the frontend is developed using the React library with additional components taken from Blueprint and Google Map React. The majority of styling has been done manually.
+
 ## Data
 
 ## Database
+
+## Sample images of Nurse Next Door
+
+### Frontpage
+![Frontpage](https://github.com/ellenzhixingao/550Project/blob/main/frontpage.png)
+### Search page
+![Search page](https://github.com/ellenzhixingao/550Project/blob/main/search.png)
+### Profile page
+![Profile page](https://github.com/ellenzhixingao/550Project/blob/main/profile.png)
+### State page
+![State page](https://github.com/ellenzhixingao/550Project/blob/main/state.png)
