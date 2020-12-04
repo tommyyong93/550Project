@@ -732,8 +732,7 @@ export default class NursingHomeProfile extends React.Component {
               </div>
             </div>
             <div className='static-map-container'>
-              {(this.state.latitude !== "" && this.state.longitude !== "") ||
-                (this.state.latitude !== "0.0" && this.state.longitude !== "0.0")
+              {(this.state.latitude && this.state.longitude )
                   ?
                     <ProfileMap
                       name={this.state.name}
