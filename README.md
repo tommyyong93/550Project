@@ -15,8 +15,12 @@ Users of Nurse Next Door can search for nursing homes based on a wide variety of
 We have a MySQL instance set up on Amazon Web Services. We use a Node/Express backend and the frontend is developed using the React library with additional components taken from Blueprint and Google Map React. The majority of styling has been done manually.
 
 ## Data
+We collected data from the CMS from their ['Provider Information'](https://data.cms.gov/provider-data/dataset/4pq5-n9py) and ['COVID-19 Nursing Home"](https://data.cms.gov/Special-Programs-Initiatives-COVID-19-Nursing-Home/COVID-19-Nursing-Home-Dataset/s2uc-8wxp) datasets.
 
 ## Database
+Both the Nursing Home Compare Provider Info and the COVID-19 Nursing Home Dataset contain location attributes - street, city, state, zip code. Location information is functionally dependent on the Federal Provider Number FPN (FPN), which serves as the primary key for both datasets. Therefore, Location is broken out into its own relation to eliminate redundancy. 
+
+Both datasets also contain certified bed attributes that are, likewise, functionally dependent on the FPN and, likewise, broken out to be included in a separate Providers relation to eliminate redundancy. The Providers relation also contains Provider Info’s static information about ownership and operations. 
 
 ## Sample images of Nurse Next Door
 
