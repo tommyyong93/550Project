@@ -725,7 +725,7 @@ export default class NursingHomeProfile extends React.Component {
                 <p>Phone Number: {this.formatPhoneNumber(this.state.Phone)}</p>
                 <p>Ownership Type: {this.state.OwnershipType} </p>
                 <p>Provider Type: {this.state.ProviderType} </p>
-                <p>Occupied Beds (as of 11/1): {this.state.TotalNumberOfOccupiedBeds}/{this.state.NumberOfAllBeds}</p>
+                <p>Occupied Beds (as of 10/1): {this.state.TotalNumberOfOccupiedBeds}/{this.state.NumberOfAllBeds}</p>
                 <p>Average # Residents Per Day: {this.state.AveResidentsPerDay}</p>
                 <p>State Rank: {this.state.StateRank}/{this.state.CountFPNs}</p>
                 <p>Overall Rank: {this.state.OverallRank}/15,342</p>
