@@ -108,7 +108,6 @@ export default class StateStats extends React.Component {
         if (!queries) return;
         var length = queries.length;
         var queriesArray = [];
-        console.log(queries)
         for (var i = 0; i < length; i++) {
           queriesArray[i] = <StateRow
             key={i + queries[i].Name}
@@ -118,7 +117,6 @@ export default class StateStats extends React.Component {
             latitude={queries[i].Latitude}
             longitude={queries[i].Longitude}
             index={i+1}
-
                             />
         }
         this.setState({
@@ -250,7 +248,7 @@ export default class StateStats extends React.Component {
             >
               <div className={Classes.DIALOG_BODY}>
                 <p>
-                  Overall Rating: {this.state.OverallRating}
+                  Overall Rating (out of 5): {this.state.OverallRating}
                 </p>
                 <p>
                   Occupancy Rate: {this.state.OccupancyRate+"%"}

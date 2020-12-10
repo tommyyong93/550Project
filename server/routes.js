@@ -105,7 +105,7 @@ function stateStats(req, res) {
   var query = `
   WITH Occupancy(FPN, state, occupied, total, rate) AS
   (SELECT P.FPN, L.State, P.TotalNumberofOccupiedBeds, P.CertifiedBeds, P.TotalNumberofOccupiedBeds/P.CertifiedBeds
-  FROM Locations L JOIN Providers P ON L.FPN = P.FPN),
+  FROM Locations L JOIN Providers P ON L.FPN = P.FPN WHERE L.State = '${state}'),
 
   ResidentCases(FPN, state, rate) AS
   (SELECT P.FPN, L.State, CD.ResidentsTotalConfirmed/P.TotalNumberofOccupiedBeds AS rate
@@ -173,13 +173,13 @@ function findSimilarHomes(req, res) {
       FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN
     WHERE l.State = '${vState}'),
   StateGrades AS (
-    SELECT FPN, Name, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_StatePercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (CovidDeathsPer1000_StatePercentile)*(-0.55) + (VentilatorsInFacility_StatePercentile)*(0.05))*10) AS Grade
-      FROM StatePercentiles),
+    SELECT FPN, State, Name, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_StatePercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (CovidDeathsPer1000_StatePercentile)*(-0.55) + (VentilatorsInFacility_StatePercentile)*(0.05))*10) AS Grade
+    FROM StatePercentiles),
   StateRanks AS (
-    SELECT FPN, Name, DENSE_RANK() OVER(ORDER BY Grade DESC) AS StateRank
-      FROM StateGrades
+    SELECT FPN, State, Name, DENSE_RANK() OVER(ORDER BY Grade DESC) AS StateRank
+    FROM StateGrades
     ORDER BY StateRank)
-  SELECT s.FPN, s.Name, StateRank, (12742 * SIN(SQRT(0.5 - COS((l.Latitude - ${vLat}) * PI() / 180) / 2 + (COS(l.Latitude * PI() / 180) * COS(${vLat} * PI() / 180) * (1-COS((l.Longitude - ${vLong})* PI()/180))/2)))) as Distance
+  SELECT s.FPN, s.Name, StateRank, l.State, l.Latitude, l.Longitude, (12742 * SIN(SQRT(0.5 - COS((l.Latitude - ${vLat}) * PI() / 180) / 2 + (COS(l.Latitude * PI() / 180) * COS(${vLat} * PI() / 180) * (1-COS((l.Longitude - ${vLong})* PI()/180))/2)))) as Distance
   FROM Locations l JOIN StateRanks s ON l.FPN=s.FPN
   WHERE (StateRank<(${rank}+10) and StateRank>(${rank}-10)) and s.FPN != '${vFPN}'
   ORDER BY Distance, StateRank
@@ -303,18 +303,22 @@ function getRank(req, res) {
     SELECT State, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_OverallPercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_OverallPercentile)*(-0.55) + (VentilatorsInFacility_OverallPercentile)*(0.05))*10) AS Grade, DENSE_RANK() OVER(ORDER BY (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_OverallPercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_OverallPercentile)*(-0.55) + (VentilatorsInFacility_OverallPercentile)*(0.05))*10) DESC) AS OverallRank
     FROM OverallPercentiles
     ORDER BY OverallRank),
+  StateCountFPNs AS (
+    SELECT State, COUNT(FPN) AS CountFPNs
+    FROM Locations
+    GROUP BY State),
   StatePercentiles AS (
-    SELECT l.State AS State, p.FPN AS FPN, p.ProviderName AS Name, cms.OverallRating AS OverallRating, cms.HealthInspectionRating AS HealthInspRating, cms.StaffingRating AS StaffRating, cms.QMRating AS QMRating, ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS AverageHrsPerResPerDay, ROUND(PERCENT_RANK() OVER (ORDER BY ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3)),6) AS AverageHrsPerResPerDay_StatePercentile, cms.NumReportedIncidents AS ReportedIncidents, cms.NumSubstantiatedComplaints AS Complaints, cov.NumVentilatorsInFacility AS VentilatorsInFacility,  ROUND(PERCENT_RANK() OVER (ORDER BY cov.NumVentilatorsInFacility),6) AS VentilatorsInFacility_StatePercentile, cov.ResidentsTotalCovidDeaths AS TotalCovidDeaths, ROUND(PERCENT_RANK() OVER (ORDER BY cov.ResidentsTotalCovidDeaths),6) AS TotalCovidDeaths_StatePercentile
-  FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN
+    SELECT l.State AS State, t.CountFPNs AS CountFPNs, p.FPN AS FPN, p.ProviderName AS Name, cms.OverallRating AS OverallRating, cms.HealthInspectionRating AS HealthInspRating, cms.StaffingRating AS StaffRating, cms.QMRating AS QMRating, ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS AverageHrsPerResPerDay, ROUND(PERCENT_RANK() OVER (ORDER BY ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3)),6) AS AverageHrsPerResPerDay_StatePercentile, cms.NumReportedIncidents AS ReportedIncidents, cms.NumSubstantiatedComplaints AS Complaints, cov.NumVentilatorsInFacility AS VentilatorsInFacility,  ROUND(PERCENT_RANK() OVER (ORDER BY cov.NumVentilatorsInFacility),6) AS VentilatorsInFacility_StatePercentile, cov.ResidentsTotalCovidDeaths AS TotalCovidDeaths, ROUND(PERCENT_RANK() OVER (ORDER BY cov.ResidentsTotalCovidDeaths),6) AS TotalCovidDeaths_StatePercentile
+    FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN JOIN StateCountFPNs t ON l.State = t.State
     WHERE l.State = '${vState}'),
   StateGrades AS (
-    SELECT State, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_StatePercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_StatePercentile)*(-0.55) + (VentilatorsInFacility_StatePercentile)*(0.05))*10) AS Grade
-  FROM StatePercentiles),
+    SELECT State, CountFPNs, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_StatePercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_StatePercentile)*(-0.55) + (VentilatorsInFacility_StatePercentile)*(0.05))*10) AS Grade
+    FROM StatePercentiles),
   StateRanks AS (
-    SELECT State, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, DENSE_RANK() OVER(ORDER BY Grade DESC) AS StateRank
-  FROM StateGrades
+    SELECT State, CountFPNs, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, DENSE_RANK() OVER(ORDER BY Grade DESC) AS StateRank
+    FROM StateGrades
     ORDER BY StateRank)
-  SELECT l.State AS State, sr.StateRank, o.OverallRank, p.FPN AS FPN, p.ProviderName AS Name, cms.OverallRating AS OverallRating, cms.HealthInspectionRating AS HealthInspRating, cms.StaffingRating AS StaffRating, cms.QMRating AS QMRating, ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS AverageHrsPerResPerDay, cms.NumReportedIncidents AS ReportedIncidents, cms.NumSubstantiatedComplaints AS Complaints, cov.ResidentsTotalCovidDeaths AS TotalCovidDeaths, cov.NumVentilatorsInFacility AS VentilatorsInFacility
+  SELECT l.State AS State, CountFPNs, sr.StateRank, o.OverallRank, p.FPN AS FPN, p.ProviderName AS Name, cms.OverallRating AS OverallRating, cms.HealthInspectionRating AS HealthInspRating, cms.StaffingRating AS StaffRating, cms.QMRating AS QMRating, ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS AverageHrsPerResPerDay, cms.NumReportedIncidents AS ReportedIncidents, cms.NumSubstantiatedComplaints AS Complaints, cov.ResidentsTotalCovidDeaths AS TotalCovidDeaths, cov.NumVentilatorsInFacility AS VentilatorsInFacility
   FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON p.FPN = cov.FPN JOIN StateRanks sr ON p.FPN = sr.FPN JOIN OverallRanks o ON p.FPN = o.FPN
   WHERE p.FPN = '${varFPN}';
 
@@ -350,7 +354,7 @@ function profileInfo(req, res) {
   SELECT ProviderName, OwnershipType, ProviderType, NumberOfAllBeds, TotalNumberOfOccupiedBeds, AveResidentsPerDay,
   OverallRating, HealthInspectionRating, StaffingRating, QMRating, TotalWeightedHealthSurveyScore, NumReportedIncidents,
   NumSubstantiatedComplaints, NumFines, NumPaymentDenials, NumPenalties, ResidentsTotalCovidDeaths, NumVentilatorsInFacility,
-  Address, City, State, Zip, CountyName, Phone
+  Address, City, State, Zip, CountyName, Phone, PassedQACheck
   FROM Locations l JOIN Providers p ON p.FPN=l.FPN JOIN CMSData cm ON cm.FPN=p.FPN JOIN COVIDData c ON c.FPN=cm.FPN
   WHERE p.FPN ='${varFPN}';
 `;
@@ -401,61 +405,187 @@ function stateAvg(req, res) {
 // /* ---- Red Flag ---- */
 function getRedFlagType(req, res) {
   var varFPN = req.params.FPN;
-  var query = `
-  WITH sub_compl AS(
-    SELECT FPN, NumSubstantiatedComplaints, percent_rank() OVER (order by NumSubstantiatedComplaints) AS 'percent_rank'
-    FROM CMSData),
-  high_sub_compl AS(
-    SELECT *
-    FROM sub_compl
-    WHERE sub_compl.percent_rank > 0.95),
-  num_fines AS(
-    SELECT FPN, NumFines, percent_rank() OVER (order by NumFines) AS 'percent_rank'
-    FROM CMSData),
-  high_num_fines AS(
-    SELECT *
-    FROM num_fines
-    WHERE num_fines.percent_rank > 0.95),
-  num_reported_incidents AS(
-    SELECT FPN, NumReportedIncidents, percent_rank() OVER (order by NumReportedIncidents) AS 'percent_rank'
-    FROM CMSData),
-  high_num_inc AS(
-    SELECT *
-    FROM num_reported_incidents
-    WHERE num_reported_incidents.percent_rank > 0.95),
-  other_flag AS (
-    SELECT FPN
-    FROM Providers
-    WHERE FPN IN (SELECT FPN FROM high_num_fines) OR FPN IN (SELECT FPN FROM high_sub_compl) OR FPN IN (SELECT FPN FROM high_num_inc) OR AbuseIcon='TRUE'),
-  covid_flag AS (
-    SELECT FPN
-    FROM COVIDData
-    WHERE
-    SubmittedData='N' OR
-    PassedQACheck='N' OR
-    ResidentsWeeklyConfirmed>0 OR
-    ResidentsAbleToTestAllWithinWeek='N' OR
-    StaffWeeklyConfirmed>0 OR
-    AnyCurrentSupplyN95Masks='N'),
-  both_flag AS (
-    SELECT FPN, 'both' as flag
-    FROM Providers
-    WHERE FPN IN (SELECT FPN FROM covid_flag) AND FPN IN (SELECT FPN FROM other_flag)),
-  covid_minus_both AS (
-    SELECT FPN, 'covid_flag' as flag
-    FROM Providers
-    WHERE FPN IN (SELECT FPN FROM covid_flag) AND FPN NOT IN (SELECT FPN FROM both_flag)),
-  other_minus_both AS (
-    SELECT FPN, 'other_flag' as flag
-    FROM Providers
-    WHERE FPN IN (SELECT FPN FROM other_flag) AND FPN NOT IN (SELECT FPN FROM both_flag)),
-  FPNs_with_flag_type AS (
-  (SELECT * FROM both_flag) UNION (SELECT * FROM covid_minus_both) UNION (SELECT * FROM other_minus_both))
-  SELECT flag
-  FROM FPNs_with_flag_type
+//   var oldslowquery = `
+//   WITH sub_compl AS(
+//     SELECT FPN, NumSubstantiatedComplaints, percent_rank() OVER (order by NumSubstantiatedComplaints) AS 'percent_rank'
+//     FROM CMSData),
+//   high_sub_compl AS(
+//     SELECT *
+//     FROM sub_compl
+//     WHERE sub_compl.percent_rank > 0.95),
+//   num_fines AS(
+//     SELECT FPN, NumFines, percent_rank() OVER (order by NumFines) AS 'percent_rank'
+//     FROM CMSData),
+//   high_num_fines AS(
+//     SELECT *
+//     FROM num_fines
+//     WHERE num_fines.percent_rank > 0.95),
+//   num_reported_incidents AS(
+//     SELECT FPN, NumReportedIncidents, percent_rank() OVER (order by NumReportedIncidents) AS 'percent_rank'
+//     FROM CMSData),
+//   high_num_inc AS(
+//     SELECT *
+//     FROM num_reported_incidents
+//     WHERE num_reported_incidents.percent_rank > 0.95),
+//   other_flag AS (
+//     SELECT FPN
+//     FROM Providers
+//     WHERE FPN IN (SELECT FPN FROM high_num_fines) OR FPN IN (SELECT FPN FROM high_sub_compl) OR FPN IN (SELECT FPN FROM high_num_inc) OR AbuseIcon='TRUE'),
+//   covid_flag AS (
+//     SELECT FPN
+//     FROM COVIDData
+//     WHERE
+//     SubmittedData='N' OR
+//     PassedQACheck='N' OR
+//     ResidentsWeeklyConfirmed>0 OR
+//     ResidentsAbleToTestAllWithinWeek='N' OR
+//     StaffWeeklyConfirmed>0 OR
+//     AnyCurrentSupplyN95Masks='N'),
+//   both_flag AS (
+//     SELECT FPN, 'both' as flag
+//     FROM Providers
+//     WHERE FPN IN (SELECT FPN FROM covid_flag) AND FPN IN (SELECT FPN FROM other_flag)),
+//   covid_minus_both AS (
+//     SELECT FPN, 'covid_flag' as flag
+//     FROM Providers
+//     WHERE FPN IN (SELECT FPN FROM covid_flag) AND FPN NOT IN (SELECT FPN FROM both_flag)),
+//   other_minus_both AS (
+//     SELECT FPN, 'other_flag' as flag
+//     FROM Providers
+//     WHERE FPN IN (SELECT FPN FROM other_flag) AND FPN NOT IN (SELECT FPN FROM both_flag)),
+//   no_flag AS (
+//     SELECT FPN, 'no_flag' as flag
+//     FROM Providers
+//     WHERE FPN NOT IN (SELECT FPN FROM other_flag) AND FPN NOT IN (SELECT FPN FROM both_flag) and FPN NOT IN (SELECT FPN FROM other_minus_both)
+//   ),
+//   FPNs_with_flag_type AS (
+//     (SELECT * FROM both_flag) UNION (SELECT * FROM covid_minus_both) UNION (SELECT * FROM other_minus_both) UNION (SELECT * FROM no_flag)
+//   )
+//   SELECT flag
+//   FROM FPNs_with_flag_type
+//   WHERE FPN ='${varFPN}'
+//  ;
+//   `
+var query = `
+WITH percentiles AS(SELECT FPN, percent_rank() OVER (order by NumSubstantiatedComplaints) as highcompl, percent_rank() OVER (order by NumFines) as highfines, percent_rank() OVER (order by NumReportedIncidents) as numinc FROM CMSData WHERE FPN ='${varFPN}'),
+high_perc AS (SELECT FPN FROM percentiles WHERE highcompl>.95 OR highfines>.95 OR numinc>9.5),
+other_flag AS (SELECT FPN FROM Providers WHERE FPN IN (SELECT FPN FROM high_perc) or AbuseIcon='TRUE'),
+covid_flag AS (SELECT FPN FROM COVIDData WHERE FPN ='${varFPN}' AND ( SubmittedData='N' OR PassedQACheck='N' OR ResidentsWeeklyConfirmed>0 OR ResidentsAbleToTestAllWithinWeek='N' OR StaffWeeklyConfirmed>0 OR AnyCurrentSupplyN95Masks='N')),
+both_flag AS (SELECT FPN, 'both' as flag FROM Providers WHERE FPN IN (SELECT FPN FROM covid_flag) AND FPN IN (SELECT FPN FROM other_flag)  and FPN ='${varFPN}'),
+covid_minus_both AS (SELECT FPN, 'covid_flag' as flag FROM Providers WHERE FPN IN (SELECT FPN FROM covid_flag) AND FPN NOT IN (SELECT FPN FROM both_flag)  and FPN ='${varFPN}'),
+other_minus_both AS (SELECT FPN, 'other_flag' as flag FROM Providers WHERE FPN IN (SELECT FPN FROM other_flag) AND FPN NOT IN (SELECT FPN FROM both_flag)  and FPN ='${varFPN}'),
+FPNs_with_flag_type AS ((SELECT * FROM both_flag) UNION (SELECT * FROM covid_minus_both) UNION (SELECT * FROM other_minus_both))
+SELECT flag FROM FPNs_with_flag_type;
+`
+  ;
+  connection.query(query, function (err, rows, fields) {
+    if (err) console.log(err);
+    else {
+      res.json(rows);
+    }
+  });
+};
+
+function getRedFlagBool(req, res) {
+  var varFPN = req.params.FPN;
+//   var oldslowquery = `
+//   WITH sub_compl AS(
+//     SELECT FPN, NumSubstantiatedComplaints, percent_rank() OVER (order by NumSubstantiatedComplaints) AS 'percent_rank'
+//     FROM CMSData),
+//   high_sub_compl AS(
+//     SELECT *
+//     FROM sub_compl
+//     WHERE sub_compl.percent_rank > 0.95),
+//   num_fines AS(
+//     SELECT FPN, NumFines, percent_rank() OVER (order by NumFines) AS 'percent_rank'
+//     FROM CMSData),
+//   high_num_fines AS(
+//     SELECT *
+//     FROM num_fines
+//     WHERE num_fines.percent_rank > 0.95),
+//   num_reported_incidents AS(
+//     SELECT FPN, NumReportedIncidents, percent_rank() OVER (order by NumReportedIncidents) AS 'percent_rank'
+//     FROM CMSData),
+//   high_num_inc AS(
+//     SELECT *
+//     FROM num_reported_incidents
+//     WHERE num_reported_incidents.percent_rank > 0.95),
+//   covid_flag AS (
+//     SELECT FPN
+//     FROM COVIDData
+//     WHERE
+//     SubmittedData='N' OR
+//     PassedQACheck='N' OR
+//     ResidentsWeeklyConfirmed>0 OR
+//     ResidentsAbleToTestAllWithinWeek='N' OR
+//     StaffWeeklyConfirmed>0 OR
+//     AnyCurrentSupplyN95Masks='N'),
+//   FPNs_with_flag AS (
+//   SELECT FPN, 'true' AS flag
+//   FROM Providers
+//   WHERE FPN IN (SELECT FPN FROM high_num_fines) OR FPN IN (SELECT FPN FROM high_sub_compl) OR FPN IN (SELECT FPN FROM high_num_inc) OR AbuseIcon='TRUE' OR FPN IN (SELECT FPN FROM covid_flag)
+//   ),
+//   FPNs_no_flag AS (
+//   SELECT FPN, 'false' as flag
+//   FROM Providers
+//   WHERE FPN NOT IN (SELECT FPN FROM high_num_fines) AND FPN NOT IN (SELECT FPN FROM high_sub_compl) AND FPN NOT IN (SELECT FPN FROM high_num_inc) AND AbuseIcon='FALSE' AND FPN NOT IN (SELECT FPN FROM covid_flag)
+//   ),
+//   all_FPNS AS (
+//   (SELECT * FROM FPNs_no_flag)
+//   UNION
+//   (SELECT * FROM FPNs_with_flag)
+//   )
+//   SELECT flag
+//   FROM all_FPNS
+//   WHERE FPN ='${varFPN}'
+//  ;
+//   `
+var query = `
+WITH percentiles AS(
+  SELECT FPN, percent_rank() OVER (order by NumSubstantiatedComplaints) as highcompl, percent_rank() OVER (order by NumFines) as highfines, percent_rank() OVER (order by NumReportedIncidents) as numinc
+  FROM CMSData
   WHERE FPN ='${varFPN}'
- ;
-  `;
+  ),
+  high_perc AS (
+  SELECT FPN
+  FROM percentiles 
+  WHERE highcompl>.95 OR highfines>.95 OR numinc>9.5 
+  ),
+  other_flag AS (
+  SELECT FPN
+  FROM Providers
+  WHERE FPN IN (SELECT FPN FROM high_perc) or AbuseIcon='TRUE'
+  ),
+covid_flag AS (
+  SELECT FPN
+  FROM COVIDData
+  WHERE FPN ='${varFPN}' AND (
+  SubmittedData='N' OR
+  PassedQACheck='N' OR
+  ResidentsWeeklyConfirmed>0 OR
+  ResidentsAbleToTestAllWithinWeek='N' OR
+  StaffWeeklyConfirmed>0 OR
+  AnyCurrentSupplyN95Masks='N')),
+FPNs_with_flag AS (
+SELECT FPN, 'true' AS flag
+FROM Providers
+WHERE FPN ='${varFPN}' AND (FPN IN (SELECT FPN FROM other_flag) OR AbuseIcon='TRUE' OR FPN IN (SELECT FPN FROM covid_flag))
+),
+FPNs_no_flag AS (
+SELECT FPN, 'false' as flag
+FROM Providers
+WHERE FPN ='${varFPN}' AND FPN NOT IN (SELECT FPN FROM FPNs_with_flag)
+),
+all_FPNS AS (
+(SELECT * FROM FPNs_no_flag)
+UNION
+(SELECT * FROM FPNs_with_flag)
+)
+SELECT flag
+FROM all_FPNS
+;
+`
+  ;
   connection.query(query, function (err, rows, fields) {
     if (err) console.log(err);
     else {
@@ -467,32 +597,37 @@ function getRedFlagType(req, res) {
 /* ---- Nearest Nursing Home that reported Data (complex query )---- */
 function getNearestReportData(req, res) {
   var varFPN = req.params.FPN
+  // var oldSlowQuery = `
+  // WITH MinDist AS (
+  //   WITH AllPairs AS (
+  //     WITH NoData AS (
+  //       SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
+  //       FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
+  //       WHERE C.SubmittedData = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0 AND P.FPN ='${varFPN}')
+  //   SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
+  //   FROM NoData N, (
+  //     SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
+  //     FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
+  //     WHERE C.SubmittedData = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0
+  //     ) AS Y)
+  // SELECT A.NoReport, MIN(A.Distance) as Distance
+  // FROM AllPairs A)
+  // SELECT M.NoReport, P.YesReport, P.YesFPN, P.YesState, M.Distance, P.Latitude, P.Longitude
+  // FROM MinDist M JOIN (
+  //   WITH NoData AS (SELECT P.ProviderName, L.State, L.Longitude, L.Latitude
+  //   FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
+  //   WHERE C.SubmittedData = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0)
+  //   SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, Y.Latitude, Y.Longitude, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
+  //   FROM NoData N, (SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
+  //   FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
+  //   WHERE C.SubmittedData = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0) AS Y
+  //   )
+  // AS P ON M.Distance = P.Distance;
+  // `
   var query = `
-  WITH MinDist AS (
-    WITH AllPairs AS (
-      WITH NoData AS (
-        SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
-        FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
-        WHERE C.SubmittedData = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0 AND P.FPN ='${varFPN}')
-    SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
-    FROM NoData N, (
-      SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
-      FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
-      WHERE C.SubmittedData = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0
-      ) AS Y)
-  SELECT A.NoReport, MIN(A.Distance) as Distance
-  FROM AllPairs A)
-  SELECT M.NoReport, P.YesReport, P.YesFPN, P.YesState, M.Distance
-  FROM MinDist M JOIN (
-    WITH NoData AS (SELECT P.ProviderName, L.State, L.Longitude, L.Latitude
-    FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
-    WHERE C.SubmittedData = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0)
-    SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
-    FROM NoData N, (SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
-    FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
-    WHERE C.SubmittedData = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0) AS Y
-    )
-  AS P ON M.Distance = P.Distance;
+  SELECT *
+  FROM SubmittedDataDistances
+  WHERE NoFPN = '${varFPN}';
   `
   console.log(query)
   connection.query(query, (err, rows, fields) => {
@@ -508,32 +643,37 @@ function getNearestReportData(req, res) {
 /* ---- Nearest Nursing Home that passed QA (complex query )---- */
 function getNearestQACheck(req, res) {
   var varFPN = req.params.FPN
+  // var oldSlowQuery = `
+  // WITH MinDist AS (
+  //   WITH AllPairs AS (
+  //     WITH NoData AS (
+  //       SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
+  //       FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
+  //       WHERE C.PassedQACheck = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0 AND P.FPN ='${varFPN}')
+  //   SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
+  //   FROM NoData N, (
+  //     SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
+  //     FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
+  //     WHERE C.PassedQACheck = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0
+  //     ) AS Y)
+  // SELECT A.NoReport, MIN(A.Distance) as Distance
+  // FROM AllPairs A)
+  // SELECT M.NoReport, P.YesReport, P.YesFPN, P.YesState, M.Distance, P.Latitude, P.Longitude
+  // FROM MinDist M JOIN (
+  //   WITH NoData AS (SELECT P.ProviderName, L.State, L.Longitude, L.Latitude
+  //   FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
+  //   WHERE C.PassedQACheck = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0)
+  //   SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, Y. Latitude, Y.Longitude, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
+  //   FROM NoData N, (SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
+  //   FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
+  //   WHERE C.PassedQACheck = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0) AS Y
+  //   )
+  // AS P ON M.Distance = P.Distance;
+  // `
   var query = `
-  WITH MinDist AS (
-    WITH AllPairs AS (
-      WITH NoData AS (
-        SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
-        FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
-        WHERE C.PassedQACheck = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0 AND P.FPN ='${varFPN}')
-    SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
-    FROM NoData N, (
-      SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
-      FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
-      WHERE C.PassedQACheck = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0
-      ) AS Y)
-  SELECT A.NoReport, MIN(A.Distance) as Distance
-  FROM AllPairs A)
-  SELECT M.NoReport, P.YesReport, P.YesFPN, P.YesState, M.Distance
-  FROM MinDist M JOIN (
-    WITH NoData AS (SELECT P.ProviderName, L.State, L.Longitude, L.Latitude
-    FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
-    WHERE C.PassedQACheck = 'N' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0)
-    SELECT N.ProviderName as NoReport, Y.ProviderName as YesReport, Y.FPN as YesFPN, N.State as NoState, Y.State as YesState, 12742 * SIN(SQRT(0.5 - COS((N.Latitude - Y.Latitude) * PI() / 180) / 2 + (COS(N.Latitude * PI() / 180) * COS(Y.Latitude * PI() / 180) * (1-COS((N.Longitude - Y.Longitude)* PI()/180))/2))) as Distance
-    FROM NoData N, (SELECT P.FPN, P.ProviderName, L.State, L.Longitude, L.Latitude
-    FROM Providers P JOIN COVIDData C ON P.FPN = C.FPN JOIN Locations L on P.FPN = L.FPN
-    WHERE C.PassedQACheck = 'Y' AND L.Longitude <> 0.0 AND L.Latitude <> 0.0) AS Y
-    )
-  AS P ON M.Distance = P.Distance;
+  SELECT *
+  FROM PassedQADistances 
+  WHERE NoFPN = '${varFPN}';
   `
   console.log(query)
   connection.query(query, (err, rows, fields) => {
@@ -637,7 +777,7 @@ function getTopNursingHomesInState(req, res) {
   var query = `
   WITH OverallPercentiles AS (
     SELECT l.State AS State, p.FPN AS FPN, p.ProviderName AS Name, cms.OverallRating AS OverallRating, cms.HealthInspectionRating AS HealthInspRating, cms.StaffingRating AS StaffRating, cms.QMRating AS QMRating, ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3) AS AverageHrsPerResPerDay, ROUND(PERCENT_RANK() OVER (ORDER BY ((cms.LicensedStaffing_ReportedHoursPerResidentPerDay + cms.TotalNurse_ReportedHoursPerResidentPerDay + PT_ReportedHoursPerResidentPerDay)/3)),6) AS AverageHrsPerResPerDay_OverallPercentile, cms.NumReportedIncidents AS ReportedIncidents, cms.NumSubstantiatedComplaints AS Complaints, cov.ResidentsTotalCovidDeaths AS TotalCovidDeaths, ROUND(PERCENT_RANK() OVER (ORDER BY cov.ResidentsTotalCovidDeaths),6) AS TotalCovidDeaths_OverallPercentile,  cov.NumVentilatorsInFacility AS VentilatorsInFacility, ROUND(PERCENT_RANK() OVER (ORDER BY cov.NumVentilatorsInFacility),6) AS VentilatorsInFacility_OverallPercentile
-    FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN),
+    FROM Providers p JOIN Locations l ON p.FPN = l.FPN JOIN CMSData cms ON p.FPN = cms.FPN JOIN COVIDData cov ON cms.FPN = cov.FPN WHERE l.State = '${State}'),
   OverallRanks AS (
     SELECT State, FPN, Name, OverallRating, HealthInspRating, StaffRating, QMRating, AverageHrsPerResPerDay, ReportedIncidents, Complaints, TotalCovidDeaths, VentilatorsInFacility, (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_OverallPercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_OverallPercentile)*(-0.55) + (VentilatorsInFacility_OverallPercentile)*(0.05))*10) AS Grade, DENSE_RANK() OVER(ORDER BY (((OverallRating)*(0.6) + (HealthInspRating)*(0.45) + (StaffRating)*(0.45) + (QMRating)*(0.45) + (AverageHrsPerResPerDay_OverallPercentile)*(0.05) + (ReportedIncidents)*(-0.25) + (Complaints)*(-0.25) + (TotalCovidDeaths_OverallPercentile)*(-0.55) + (VentilatorsInFacility_OverallPercentile)*(0.05))*10) DESC) AS OverallRank
     FROM OverallPercentiles
@@ -671,6 +811,7 @@ module.exports = {
   searchBar: searchBar,
   filteredSearch: filteredSearch,
   getRedFlagType: getRedFlagType,
+  getRedFlagBool: getRedFlagBool,
   getLongitude: getLongitude,
   getState: getState,
   getLatitude: getLatitude,

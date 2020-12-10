@@ -20,6 +20,7 @@
   float: left;
   width: 20%;
   height: 100vh;
+  overflow: scroll;
 }
 
 .map-container{
@@ -65,4 +66,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.Tooltip{
+  overflow: hidden;
+  border-bottom: 1px dotted;
 }
