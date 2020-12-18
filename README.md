@@ -1,5 +1,4 @@
 # Nurse Next Door
-CIS550 Group Project    
 Ellen Gao, Rebecca Sassower, Claire Walker, Tommy Yong
 
 ## Setup
